@@ -14,10 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystem.PortMan;
 import java.util.logging.Logger;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
-
 public class Telemetry extends SubsystemBase{
     
     private LidarPWM frontLidar, rearLidar;
@@ -34,8 +30,6 @@ public class Telemetry extends SubsystemBase{
     private MedianFilter filterRear;
 
     public Telemetry() {
-
-
     }
     
     public void init(PortMan portMan) throws Exception{

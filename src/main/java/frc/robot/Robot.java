@@ -109,15 +109,16 @@ public class Robot extends TimedRobot {
     test = new Auton(0.3);
     test.initialize();
 
-
     if(simpleAuton.getBoolean(true))
       autonCommand = new SimpleAuton();
     else{
+      /*
       autonCommand = new ScoringAuton(
         SubsystemFactory.getInstance().getTransport(), 
         SubsystemFactory.getInstance().getIntake(),
         SubsystemFactory.getInstance().getControlPanel(), 
         SubsystemFactory.getInstance().getShooter());
+        */
     }
 
     CommandScheduler.getInstance().schedule(autonCommand);
