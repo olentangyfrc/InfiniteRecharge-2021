@@ -73,15 +73,15 @@ public class SubsystemFactory {
      * keep all available subsystem declarations here.
      */
 
-    //private Transport transport;
-    //private ControlPanel controlPanel;
-    //private Climber climber;
-    //private OneWheelShooter oneWheelShooter;
+    private Transport transport;
+    private ControlPanel controlPanel;
+    private Climber climber;
+    private OneWheelShooter oneWheelShooter;
     private Telemetry telemetry;
-    //private PixyLineCam pixyLineCam;
+    private PixyLineCam pixyLineCam;
     private DrivetrainSubsystem driveTrain;
-    //private Intake intake;
-    //private Winch winch;
+    private Intake intake;
+    private Winch winch;
     
     private static ArrayList<SBInterface> subsystemInterfaceList;
 
