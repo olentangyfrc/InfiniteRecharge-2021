@@ -117,11 +117,17 @@ public class OI {
     public static final int CancelWhenPressed   = 5;
 
     public void init() {
-       leftJoy = new Joystick(0); // The left joystick exists on this port in robot map
-       rightJoy = new Joystick(1); // The right joystick exists on this port in robot map
-       auxJoy = new Joystick(2);
-       leftButtonBox = new Joystick(3);
-       rightButtonBox = new Joystick(4);
+       init4611();
+    }
+    public void init4611() {
+        leftJoy = new Joystick(0); // The left joystick exists on this port in robot map
+        rightJoy = new Joystick(1); // The right joystick exists on this port in robot map
+        auxJoy = new Joystick(2);
+        leftButtonBox = new Joystick(3);
+        rightButtonBox = new Joystick(4);
+    }
+    public void init2910() {
+        xbox = new XboxController(0);
     }
 
     public double getLeftJoystickXValue() {
@@ -150,10 +156,15 @@ public class OI {
     public double getLeftXboxYValue(){
         return getFilteredValue(xbox.getY(Hand.kLeft));
     }
+    public double getLeftXboxXValue() {
+        return getFilteredValue(xbox.getX(Hand.kLeft));
+    }
     public double getRightXboxYValue(){
         return getFilteredValue(xbox.getY(Hand.kRight));
     }
-
+    public double getRightXboxXValue() {
+        return getFilteredValue(xbox.getX(Hand.kRight));
+    }
     /**
      * this method binds a Command to a Joystick button for an action
      * @param c - the Command
