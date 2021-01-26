@@ -9,7 +9,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-
+import frc.common.drivers.Gyroscope;
 import frc.robot.OI;
 import frc.robot.OzoneException;
 import frc.robot.subsystem.climber.Climber;
@@ -27,6 +27,7 @@ import frc.robot.subsystem.intake.commands.IntakeSpinForward;
 import frc.robot.subsystem.intake.commands.IntakeStop;
 import frc.robot.subsystem.intake.commands.IntakeUp;
 import frc.robot.subsystem.telemetry.Telemetry;
+import frc.robot.subsystem.telemetry.Pigeon;
 import frc.robot.subsystem.telemetry.commands.SquareSelf;
 import frc.robot.subsystem.onewheelshooter.OneWheelShooter;
 import frc.robot.subsystem.winch.Winch;
@@ -65,9 +66,6 @@ public class SubsystemFactory {
 
     static Logger logger = Logger.getLogger(SubsystemFactory.class.getName());
 
-    private static String botName;
-    private HashMap<String, String> allMACs; // will contain mapping of MACs to Bot Names
-
     private static DisplayManager displayManager;
 
     private PowerDistributionPanel pdp;
@@ -85,25 +83,11 @@ public class SubsystemFactory {
     private DrivetrainSubsystem driveTrain;
     private Intake intake;
     private Winch winch;
+    private Pigeon pigeon;
     
     private static ArrayList<SBInterface> subsystemInterfaceList;
 
     private SubsystemFactory() {
-        // private constructor to enforce Singleton pattern
-        botName = "unknown";
-        allMACs = new HashMap<>();
-        // add all the mappings from MACs to names here
-        // as you add mappings here:
-        // 1) update the select statement in the init method
-        // 2) add the init method for that robot
-        allMACs.put("00:80:2F:17:BD:76", "zombie"); // usb0
-        allMACs.put("00:80:2F:17:BD:75", "zombie"); // eth0
-        allMACs.put("00:80:2F:28:64:39", "plank"); //usb0
-        allMACs.put("00:80:2F:28:64:38", "plank"); //eth0
-        allMACs.put("00:80:2F:27:04:C7", "RIO3"); //usb0 
-        allMACs.put("00:80:2F:27:04:C6", "RIO3"); //eth0
-        allMACs.put("00:80:2F:17:D7:4B", "RIO2"); //eth0
-        allMACs.put("00:80:2F:17:D7:4C", "RIO2"); //usb0
     }
 
     public static SubsystemFactory getInstance() {
@@ -119,53 +103,18 @@ public class SubsystemFactory {
 
         logger.info("initializing");
 
-        botName = getBotName();
-
-        logger.info("Running on " + botName);
-
         displayManager = dm;
         subsystemInterfaceList = new ArrayList<SBInterface>();
         pdp = new PowerDistributionPanel(1);
-        botName = "comp";
 
-        try {
-
-            // Note that you should update this switch statement as you add bots to the list
-            // above
-            switch (botName) {
-           
-            case "comp":
-                initComp(portMan);
-                break;
-            default:
-                initComp(portMan); // default to football if we don't know better
-            }
-
-            initCommon(portMan);
-
-        } catch (Exception e) {
-            throw e;
-        }
+        initComp(portMan);
     }
 
-    /**
-     * 
-     * init subsystems that are common to all bots
-     * 
-     */
-
-    private void initCommon(PortMan portMan) {
-
-    }
 
     private void initComp(PortMan portMan ) throws Exception {
 
         logger.info("initiatizing");
-        /**
-         * All of the Winch stuff goes here
-         */
-        winch = new Winch();
-        winch.init(portMan);
+
         
         WinchUp w = new WinchUp(winch);
         OI.getInstance().bind(w, OI.RightButtonBox4, OI.WhileHeld);
@@ -174,15 +123,18 @@ public class SubsystemFactory {
         driveTrain  = new DrivetrainSubsystem();
         driveTrain.init(portMan);
 
+        pigeon = new Pigeon(21);
+        pigeon.calibrate();
+        pigeon.setInverted(true);
+
 
         /**
          * All of the OneWheelShooter stuff goes here
-         */
+         
         
         oneWheelShooter = new OneWheelShooter();
         oneWheelShooter.init(portMan);
         displayManager.addShooter(oneWheelShooter);
-
         
         OneWheelShoot sh = new OneWheelShoot(oneWheelShooter);
 
@@ -192,38 +144,31 @@ public class SubsystemFactory {
         OneWheelStop st = new OneWheelStop(oneWheelShooter);
         OI.getInstance().bind(st, OI.LeftButtonBox10, OI.WhenPressed);
         OI.getInstance().bind(st, OI.LeftJoyButton3, OI.WhenPressed);
-        
+        */
 
          /**
          * All of Intake Stuff goes here
-         */
+         
 
         intake = new Intake();
         intake.init(portMan);
         displayManager.addIntake(intake);
 
-        
+     
         IntakeUp iu = new IntakeUp(intake);
-
 
         IntakeDown id = new IntakeDown(intake);
 
-
         IntakeSpinForward isf = new IntakeSpinForward(intake);
-
 
         IntakeSpinBack isb = new IntakeSpinBack(intake);
 
-
         IntakeStop is = new IntakeStop(intake);
-
+        */  
 
 
          /** * All of the Transport stuff goes here
-         *
-         */
-
-        
+         * 
         transport = new Transport();
         transport.init(portMan);
         displayManager.addTransport(transport);
@@ -231,7 +176,6 @@ public class SubsystemFactory {
         //TakeIn tc = new TakeIn(transport);
 
         PushOut pc = new PushOut(transport);
-
 
         SideGateOpen tu = new SideGateOpen(transport);
         OI.getInstance().bind(tu, OI.LeftJoyButton6, OI.WhenPressed);
@@ -259,10 +203,11 @@ public class SubsystemFactory {
         OI.getInstance().bind(sHigh, OI.LeftJoyButton1, OI.WhenPressed);
         OI.getInstance().bind(sHigh, OI.RightButtonBox10, OI.WhenPressed);
         
+        */
 
          /**
          * All of the ControlPanel stuff goes here
-         */
+         
 
         controlPanel = new ControlPanel();
         controlPanel.init(portMan, telemetry);
@@ -279,17 +224,15 @@ public class SubsystemFactory {
         OI.getInstance().bind(sm, OI.LeftJoyButton4, OI.WhileHeld);
 
         SpinnerUp su = new SpinnerUp(controlPanel);
-        
-
         SpinnerRetract sr = new SpinnerRetract(controlPanel);
         
-
         Stop stop = new Stop(controlPanel);
         OI.getInstance().bind(stop, OI.RightButtonBox7, OI.WhenPressed);
-        
+        */
+
         /**
          * All of the Climber stuff goes here
-         */
+         
         climber = new Climber();
         climber.init(portMan);
         displayManager.addClimber(climber);
@@ -297,9 +240,7 @@ public class SubsystemFactory {
         
         Climb c = new Climb(climber);
 
-
         ClimberRetract cr = new ClimberRetract(climber);
-
 
         ClimberControl cc = new ClimberControl(climber);
         OI.getInstance().bind(cc, OI.RightButtonBox3,OI.WhileHeld);
@@ -308,6 +249,7 @@ public class SubsystemFactory {
         ClimberControlBack ccb = new ClimberControlBack(climber);
         OI.getInstance().bind(ccb,OI.RightButtonBox1,OI.WhileHeld);
         OI.getInstance().bind(ccb, OI.RightJoyButton2,OI.WhileHeld);
+        */
 
          /**
          * All of the Telemery Stuff goes here
@@ -315,9 +257,10 @@ public class SubsystemFactory {
 
         telemetry = new Telemetry();
         telemetry.init(portMan);
-
+        displayManager.addTelemetry(telemetry);
 
         //Command Groups
+        /*
         CollectionMode collectionMode = new CollectionMode(transport, intake, controlPanel, oneWheelShooter);
         OI.getInstance().bind(collectionMode, OI.LeftButtonBox1, OI.WhenPressed);
         
@@ -338,24 +281,7 @@ public class SubsystemFactory {
 
         SpitBallsMode spitBallsMode = new SpitBallsMode(transport, intake);
         OI.getInstance().bind(spitBallsMode, OI.LeftButtonBox11, OI.WhenPressed);
-    }
-    /**
-     * 
-     * init subsystems specific to Football
-     * 
-     */
-
-    private void initFootball(PortMan portMan) throws Exception {
-        logger.info("Initializing Football");
-        
-    }
-
-    private void initZombie(PortMan portMan) throws OzoneException {
-        logger.info("Initializing Zombie");
-    }
-
-    private void initRio2(PortMan portMan) throws OzoneException {
-        logger.info("Initializing RIO2");
+        */
     }
 
     public PowerDistributionPanel getPDP(){
@@ -380,47 +306,7 @@ public class SubsystemFactory {
     public OneWheelShooter getShooter(){
         return oneWheelShooter;
     }
-
-    private String getBotName() throws Exception {
-
-        Enumeration<NetworkInterface> networks;
-            networks = NetworkInterface.getNetworkInterfaces();
-
-            String activeMACs = "";
-            for (NetworkInterface net : Collections.list(networks)) {
-                String mac = formatMACAddress(net.getHardwareAddress());
-                activeMACs += (mac+" ");
-                logger.info("Network #"+net.getIndex()+" "+net.getName()+" "+mac);
-                if (allMACs.containsKey(mac)) {
-                    botName = allMACs.get(mac);
-                    logger.info("   this MAC is for "+botName);
-                }
-            }
-
-            return botName;
-        }
-
-    /**
-     * Formats the byte array representing the mac address as more human-readable form
-     * @param hardwareAddress byte array
-     * @return string of hex bytes separated by colons
-     */
-    private String formatMACAddress(byte[] hardwareAddress) {
-        if (hardwareAddress == null || hardwareAddress.length == 0) {
-            return "";
-        }
-        StringBuilder mac = new StringBuilder(); // StringBuilder is a premature optimization here, but done as best practice
-        for (int k=0;k<hardwareAddress.length;k++) {
-            int i = hardwareAddress[k] & 0xFF;  // unsigned integer from byte
-            String hex = Integer.toString(i,16);
-            if (hex.length() == 1) {  // we want to make all bytes two hex digits 
-                hex = "0"+hex;
-            }
-            mac.append(hex.toUpperCase());
-            mac.append(":");
-        }
-        mac.setLength(mac.length()-1);  // trim off the trailing colon
-        return mac.toString();
+    public Gyroscope getGyro() {
+        return pigeon;
     }
-
 }
