@@ -9,7 +9,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-
+import frc.common.drivers.Gyroscope;
 import frc.robot.OI;
 import frc.robot.OzoneException;
 import frc.robot.subsystem.climber.Climber;
@@ -27,6 +27,7 @@ import frc.robot.subsystem.intake.commands.IntakeSpinForward;
 import frc.robot.subsystem.intake.commands.IntakeStop;
 import frc.robot.subsystem.intake.commands.IntakeUp;
 import frc.robot.subsystem.telemetry.Telemetry;
+import frc.robot.subsystem.telemetry.Pigeon;
 import frc.robot.subsystem.telemetry.commands.SquareSelf;
 import frc.robot.subsystem.onewheelshooter.OneWheelShooter;
 import frc.robot.subsystem.winch.Winch;
@@ -82,6 +83,7 @@ public class SubsystemFactory {
     private DrivetrainSubsystem driveTrain;
     private Intake intake;
     private Winch winch;
+    private Pigeon pigeon;
     
     private static ArrayList<SBInterface> subsystemInterfaceList;
 
@@ -113,6 +115,7 @@ public class SubsystemFactory {
 
         logger.info("initiatizing");
 
+
         /*
         WinchUp w = new WinchUp(winch);
         OI.getInstance().bind(w, OI.RightButtonBox4, OI.WhileHeld);
@@ -120,6 +123,10 @@ public class SubsystemFactory {
         */
         driveTrain  = new DrivetrainSubsystem();
         driveTrain.init(portMan);
+
+        pigeon = new Pigeon(21);
+        pigeon.calibrate();
+        pigeon.setInverted(true);
 
         /**
          * All of the OneWheelShooter stuff goes here
@@ -298,5 +305,8 @@ public class SubsystemFactory {
     }
     public OneWheelShooter getShooter(){
         return oneWheelShooter;
+    }
+    public Gyroscope getGyro() {
+        return pigeon;
     }
 }
