@@ -113,11 +113,11 @@ public class SubsystemFactory {
 
         logger.info("initiatizing");
 
-        
+        /*
         WinchUp w = new WinchUp(winch);
         OI.getInstance().bind(w, OI.RightButtonBox4, OI.WhileHeld);
         OI.getInstance().bind(w, OI.RightJoyButton11, OI.WhileHeld);
-        
+        */
         driveTrain  = new DrivetrainSubsystem();
         driveTrain.init(portMan);
 

@@ -7,6 +7,8 @@
 
 package frc.robot.subsystem.telemetry;
 
+import java.util.logging.Logger;
+
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -16,6 +18,7 @@ import frc.robot.subsystem.SBInterface;
  * Add your docs here.
  */
 public class TelemetrySBTab implements SBInterface {
+    private static Logger logger = Logger.getLogger(TelemetrySBTab.class.getName());
     public Telemetry telemetry;
     public ShuffleboardTab tab;
 

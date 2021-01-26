@@ -35,8 +35,8 @@ public class Telemetry extends SubsystemBase{
     public void init(PortMan portMan) throws Exception{
         logger.entering(Telemetry.class.getName(), "init()");
 
-        //frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital0_label, "Telemetry.frontLidar"));
-        //rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital1_label, "Telemetry.rearLidar"));
+        //frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital4_label, "Telemetry.frontLidar"));
+        rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital1_label, "Telemetry.rearLidar"));
         filterFront = new MedianFilter(10);
         filterRear = new MedianFilter(10);
 
@@ -133,10 +133,15 @@ public class Telemetry extends SubsystemBase{
     */
 
     public double getFrontLidarDistance(){
+        if (frontLidar == null)
+            return 0.0;
         return filterFront.calculate(frontLidar.getDistance() - 10);
     }
 
     public double getRearLidarDistance(){
+        if (rearLidar == null)
+            return 0.0;
+            
         return filterRear.calculate(rearLidar.getDistance());
     }
 
