@@ -14,10 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystem.PortMan;
 import java.util.logging.Logger;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
-
 public class Telemetry extends SubsystemBase{
     
     private LidarPWM frontLidar, rearLidar;
@@ -34,15 +30,13 @@ public class Telemetry extends SubsystemBase{
     private MedianFilter filterRear;
 
     public Telemetry() {
-
-
     }
     
     public void init(PortMan portMan) throws Exception{
         logger.entering(Telemetry.class.getName(), "init()");
 
-        //frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital0_label, "Telemetry.frontLidar"));
-        //rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital1_label, "Telemetry.rearLidar"));
+        //frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital4_label, "Telemetry.frontLidar"));
+        rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital1_label, "Telemetry.rearLidar"));
         filterFront = new MedianFilter(10);
         filterRear = new MedianFilter(10);
 
@@ -139,10 +133,15 @@ public class Telemetry extends SubsystemBase{
     */
 
     public double getFrontLidarDistance(){
+        if (frontLidar == null)
+            return 0.0;
         return filterFront.calculate(frontLidar.getDistance() - 10);
     }
 
     public double getRearLidarDistance(){
+        if (rearLidar == null)
+            return 0.0;
+            
         return filterRear.calculate(rearLidar.getDistance());
     }
 

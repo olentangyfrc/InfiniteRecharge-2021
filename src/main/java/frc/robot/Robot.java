@@ -63,7 +63,9 @@ public class Robot extends TimedRobot {
     tab = Shuffleboard.getTab("Auton");
     simpleAuton = tab.add("Simple Auton", true).getEntry();
 
-    OzoneLogger.getInstance().init(Level.FINE);
+    OzoneLogger.getInstance().init(Level.ALL);
+    logger.log(Level.INFO, "robot init");
+
     dManager = new DisplayManager();
 
     try {
@@ -89,7 +91,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
        CommandScheduler.getInstance().run();
-       //dManager.update();
+       dManager.update();
   }
 
   /**
@@ -109,15 +111,16 @@ public class Robot extends TimedRobot {
     test = new Auton(0.3);
     test.initialize();
 
-
     if(simpleAuton.getBoolean(true))
       autonCommand = new SimpleAuton();
     else{
+      
       autonCommand = new ScoringAuton(
         SubsystemFactory.getInstance().getTransport(), 
         SubsystemFactory.getInstance().getIntake(),
         SubsystemFactory.getInstance().getControlPanel(), 
         SubsystemFactory.getInstance().getShooter());
+        
     }
 
     CommandScheduler.getInstance().schedule(autonCommand);
