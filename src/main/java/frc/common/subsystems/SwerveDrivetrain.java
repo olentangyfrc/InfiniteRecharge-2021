@@ -83,13 +83,13 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
         resetKinematics(Vector2.ZERO, timestamp);
     }
 
-    public synchronized void resetKinematics(Vector2 position, double timestamp) {
+    public synchronized void resetKinematics(Vector2 zero, double timestamp) {
         for (SwerveModule module : getSwerveModules()) {
-            module.resetKinematics(position.add(module.getModulePosition()));
+            module.resetKinematics(zero.add(module.getModulePosition()));
         }
 
         kinematicVelocity = Vector2.ZERO;
-        kinematicPosition = position;
+        kinematicPosition = zero;
         lastKinematicTimestamp = timestamp;
     }
 

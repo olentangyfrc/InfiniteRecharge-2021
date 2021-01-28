@@ -28,6 +28,13 @@ import frc.robot.subsystem.commandgroups.SimpleAuton;
 import frc.robot.subsystem.controlpanel.ControlPanel;
 import frc.robot.util.OzoneLogger;
 
+//2910 auton stuff
+import frc.common.auton.AutonomousSelector;
+import frc.common.auton.AutonomousTrajectories;
+import frc.common.commands.FollowTrajectoryCommand;
+import frc.robot.subsystem.swerve.DrivetrainSubsystem2910;
+import edu.wpi.first.wpilibj.command.Command;
+
 import frc.robot.subsystem.SBInterface;
 import frc.robot.subsystem.controlpanel.ControlPanelSBTab;
 
@@ -49,8 +56,9 @@ public class Robot extends TimedRobot {
   private NetworkTableEntry simpleAuton;
   private ShuffleboardTab tab;
 
-  private Auton test;
-  private SequentialCommandGroup autonCommand;
+  private AutonomousTrajectories autonomousTrajectories = new AutonomousTrajectories(DrivetrainSubsystem2910.CONSTRAINTS);
+  private AutonomousSelector autonomousSelector = new AutonomousSelector(autonomousTrajectories);
+  private Command autonomousCommand = null;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -107,23 +115,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    CommandScheduler.getInstance().run();
-    test = new Auton(0.3);
-    test.initialize();
-
-    if(simpleAuton.getBoolean(true))
-      autonCommand = new SimpleAuton();
-    else{
-      
-      autonCommand = new ScoringAuton(
-        SubsystemFactory.getInstance().getTransport(), 
-        SubsystemFactory.getInstance().getIntake(),
-        SubsystemFactory.getInstance().getControlPanel(), 
-        SubsystemFactory.getInstance().getShooter());
-        
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
     }
 
-    CommandScheduler.getInstance().schedule(autonCommand);
+    autonomousCommand = autonomousSelector.getCommand();
+    autonomousCommand.start();
   }
 
   /**
