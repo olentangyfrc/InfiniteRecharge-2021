@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystem.PortMan;
 import java.util.logging.Logger;
 
+import javax.lang.model.util.ElementScanner6;
+
 public class Telemetry extends SubsystemBase{
     
     private LidarPWM frontLidar, rearLidar;
@@ -24,7 +26,7 @@ public class Telemetry extends SubsystemBase{
     private static Logger logger = Logger.getLogger(Telemetry.class.getName());
 
     private double betweenLidarDistance = 0;
-    private double lidarTolerance = 5;
+    private double lidarTolerance = 2.34;
     private double correction = Math.PI/180;
     private MedianFilter filterFront;
     private MedianFilter filterRear;
@@ -46,11 +48,21 @@ public class Telemetry extends SubsystemBase{
         logger.exiting(Telemetry.class.getName(), "init()");
     }
 
-    public boolean isSquare(double tolerance){
-        if (Math.abs(getFrontLidarDistance() - getRearLidarDistance()) <= tolerance)
-            return true;
-        else
-            return false;
+    public int whereAmI(){
+    {
+        //multiplies speed by the value that is returned to set direction of rotation
+        position.updatePosition();
+            if (position.gety1() < position.gety2() - lidarTolerance){
+                //rotate left
+                return -1;
+            } else if(position.gety1() > position.gety2() + lidarTolerance){
+                //rotate right
+                return 1;
+            } else {
+                //already square
+                return 0;
+            }
+        }     
     }
     
     /*
@@ -145,10 +157,11 @@ public class Telemetry extends SubsystemBase{
         return filterRear.calculate(rearLidar.getDistance());
     }
 
-    public boolean isSquare()
+    /*public boolean isSquare()
     {
-        return isSquare(100);
+        return whereAmI(100);
     }
+    */
     
     public double getTolerance(){
         return lidarTolerance;

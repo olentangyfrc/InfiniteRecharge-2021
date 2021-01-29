@@ -21,6 +21,10 @@ public class SquareSelf extends CommandBase {
   private double targetDistance;
   private static Logger logger = Logger.getLogger(SquareSelf.class.getName());
 
+  private int direction = 0;
+
+  private double rotSpeed = 0.3;
+
   public SquareSelf(Telemetry sqs, double td) {
     // Use addRequirements() here to declare subsystem dependencies.
     telemetry = sqs;
@@ -33,89 +37,16 @@ public class SquareSelf extends CommandBase {
   public void initialize() {
   stop = false;
 
-  if (Math.abs(telemetry.getFrontLidarDistance()-targetDistance) > telemetry.getTolerance() || Math.abs(telemetry.getRearLidarDistance()-targetDistance) > telemetry.getTolerance() || Math.abs(telemetry.getFrontLidarDistance()-telemetry.getRearLidarDistance()) > telemetry.getTolerance())
-  {
-    double angleError = Math.atan((Math.max(telemetry.getFrontLidarDistance(), telemetry.getRearLidarDistance())-Math.min(telemetry.getFrontLidarDistance(), telemetry.getRearLidarDistance()))/telemetry.getBetweenLidar());
-
-    if (telemetry.getFrontLidarDistance()*Math.cos(angleError)-targetDistance > telemetry.getRearLidarDistance()*Math.cos(angleError)-targetDistance)
-    {
-      if (telemetry.getFrontLidarDistance() < telemetry.getRearLidarDistance())
-      {
-          //move front wheels right angleError, turn right
-          logger.info("Move front wheels right angleError (" + angleError + "), turn right.");
-      }
-      else
-      {
-          //move front wheels left angleError, turn left
-          logger.info("Move front wheels left angleError (" + angleError + "), turn left.");
-      }
-    }
-    else
-    {
-      if (telemetry.getFrontLidarDistance() < telemetry.getRearLidarDistance())
-      {
-          //move back wheels left angleError, turn right
-          logger.info("move back wheels left angleError (" + angleError + "), turn right.");
-      }
-      else
-      {
-          //move back wheels right angleError, turn left
-          logger.info("move back wheels right angleError (" + angleError + "), turn left.");
-      }
-    }
-
-    while(telemetry.isSquare(telemetry.getTolerance()) == false)
-    {
-      if (telemetry.getFrontLidarDistance()*Math.cos(angleError)-targetDistance > telemetry.getRearLidarDistance()*Math.cos(angleError)-targetDistance)
-      {
-        if (telemetry.getFrontLidarDistance() < telemetry.getRearLidarDistance())
-        {
-            //move front wheels right correction, turn right
-            logger.info("move front wheels right correction, turn right.");
-        }
-        else
-        {
-            //move front wheels left correction, turn left
-            logger.info("move front wheels left correction, turn left.");
-        }
-      }
-      else
-      {
-        if (telemetry.getFrontLidarDistance() < telemetry.getRearLidarDistance())
-        {
-            //move back wheels left correction, turn right
-            logger.info("move back wheels left correction, turn right.");
-        }
-        else
-        {
-            //move back wheels right correction, turn left
-            logger.info("move back wheels right correction, turn left.");
-        }
-      }
-    }
-    
-    double distanceError = Math.abs(telemetry.getFrontLidarDistance() - targetDistance);
-
-    if (distanceError > telemetry.getTolerance())
-    {
-        if (telemetry.getFrontLidarDistance() > targetDistance)
-        {
-            //move left distanceError
-            logger.info("move left distanceError (" + distanceError + ")");
-        }
-        else
-        {
-            //move right distanceError
-            logger.info("move right distanceError (" + distanceError + ")");
-        }
-    }
-  }
-  stop = true;
+  //stop = true; why is there stop = true?
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    direction = telemetry.whereAmI();
+    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, 0), speed * direction, true);
+    if(telemetry.whereAmI() == 0)
+      stop = true;
   }
 
   // Called once the command ends or is interrupted.
@@ -127,6 +58,7 @@ public class SquareSelf extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return stop;
+    if(telemetry.whereAmI() == 0)
+      return stop;
   }
 }
