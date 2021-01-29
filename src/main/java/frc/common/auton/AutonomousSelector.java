@@ -105,7 +105,6 @@ public class AutonomousSelector {
     }
 
     public Command getCommand() {
-        AutonomousMode mode = autonomousModeChooser.getSelected();
         Rotation2 startingOrientation = orientationChooser.getSelected();
         Side startingSide = sideChooser.getSelected();
         boolean onHab2 = onHab2Entry.getBoolean(false);
@@ -121,10 +120,6 @@ public class AutonomousSelector {
         }));
 
         // If we want to manually drive the robot, return now.
-        if (mode == AutonomousMode.DRIVEN) {
-            return group;
-        }
-
         // Drive to the first target
         // If we are on hab 2, leave hab 2 in a (semi) repeatable manner
         if (onHab2) {
@@ -134,28 +129,6 @@ public class AutonomousSelector {
         }
         // Enqueue the next trajectories
         hybridCommandQueue.clear();
-        // First we want to go to the loading station
-        CommandGroup loadingStationPickup1 = new CommandGroup();
-        loadingStationPickup1.setRunWhenDisabled(true);
-        loadingStationPickup1.addSequential(new FollowTrajectoryCommand(trajectories.getCargoSideNearToLoadingStationTrajectory(startingSide)));
-        // Next we want to go to the mid cargo ship
-        CommandGroup cargoMidPlace = new CommandGroup();
-        cargoMidPlace.setRunWhenDisabled(true);
-        cargoMidPlace.addSequential(new FollowTrajectoryCommand(trajectories.getLoadingStationToCargoSideMidTrajectory(startingSide)));
-        if (mode == AutonomousMode.AUTONOMOUS) {
-            group.addSequential(cargoMidPlace);
-        } else {
-            hybridCommandQueue.add(cargoMidPlace);
-        }
-        // Finally, drive back to the loading station
-        Command loadingStationPickup2 = new FollowTrajectoryCommand(trajectories.getCargoSideMidToLoadingStationTrajectory(startingSide));
-        loadingStationPickup2.setRunWhenDisabled(true);
-        if (mode == AutonomousMode.AUTONOMOUS) {
-            group.addSequential(loadingStationPickup2);
-        } else {
-            hybridCommandQueue.add(loadingStationPickup2);
-        }
-
         return group;
     }
 

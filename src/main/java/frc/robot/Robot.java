@@ -23,8 +23,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystem.DisplayManager;
 import frc.robot.subsystem.PortMan;
 import frc.robot.subsystem.SubsystemFactory;
-import frc.robot.subsystem.commandgroups.ScoringAuton;
-import frc.robot.subsystem.commandgroups.SimpleAuton;
 import frc.robot.subsystem.controlpanel.ControlPanel;
 import frc.robot.util.OzoneLogger;
 
@@ -35,9 +33,9 @@ import frc.common.commands.FollowTrajectoryCommand;
 import frc.robot.subsystem.swerve.DrivetrainSubsystem2910;
 import edu.wpi.first.wpilibj.command.Command;
 
+
 import frc.robot.subsystem.SBInterface;
 import frc.robot.subsystem.controlpanel.ControlPanelSBTab;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -53,11 +51,11 @@ public class Robot extends TimedRobot {
   private static SubsystemFactory subsystemFactory;
 
   private DisplayManager dManager;
-  private NetworkTableEntry simpleAuton;
   private ShuffleboardTab tab;
 
   private AutonomousTrajectories autonomousTrajectories = new AutonomousTrajectories(DrivetrainSubsystem2910.CONSTRAINTS);
   private AutonomousSelector autonomousSelector = new AutonomousSelector(autonomousTrajectories);
+
   private Command autonomousCommand = null;
 
   /**
@@ -69,7 +67,6 @@ public class Robot extends TimedRobot {
     subsystemFactory = SubsystemFactory.getInstance();
 
     tab = Shuffleboard.getTab("Auton");
-    simpleAuton = tab.add("Simple Auton", true).getEntry();
 
     OzoneLogger.getInstance().init(Level.ALL);
     logger.log(Level.INFO, "robot init");
