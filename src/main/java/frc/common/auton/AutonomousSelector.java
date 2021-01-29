@@ -22,6 +22,9 @@ import frc.common.util.Side;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class AutonomousSelector {
     private final AutonomousTrajectories trajectories;
 
@@ -34,6 +37,8 @@ public class AutonomousSelector {
     private static NetworkTableEntry rocketAutoEntry;
 
     private Queue<Command> hybridCommandQueue = new LinkedList<>();
+
+    static Logger logger = Logger.getLogger(AutonomousSelector.class.getName());
 
     static {
         ShuffleboardTab sandstormTab = Shuffleboard.getTab("Sandstorm settings");
@@ -105,6 +110,7 @@ public class AutonomousSelector {
     }
 
     public Command getCommand() {
+        
         Rotation2 startingOrientation = orientationChooser.getSelected();
         Side startingSide = sideChooser.getSelected();
         boolean onHab2 = onHab2Entry.getBoolean(false);

@@ -32,6 +32,7 @@ import frc.common.auton.AutonomousTrajectories;
 import frc.common.commands.FollowTrajectoryCommand;
 import frc.robot.subsystem.swerve.DrivetrainSubsystem2910;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Scheduler;
 
 
 import frc.robot.subsystem.SBInterface;
@@ -126,6 +127,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     CommandScheduler.getInstance().run();
+    Scheduler.getInstance().run();
 
     //test.execute();
   }

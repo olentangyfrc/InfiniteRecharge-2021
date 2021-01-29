@@ -107,11 +107,11 @@ public class SubsystemFactory {
         subsystemInterfaceList = new ArrayList<SBInterface>();
         pdp = new PowerDistributionPanel(1);
 
-        initComp(portMan);
+        initComp(portMan, "2910");
     }
 
 
-    private void initComp(PortMan portMan ) throws Exception {
+    private void initComp(PortMan portMan, String driveTrainTeam) throws Exception {
 
         logger.info("initiatizing");
 
@@ -121,8 +121,10 @@ public class SubsystemFactory {
         OI.getInstance().bind(w, OI.RightButtonBox4, OI.WhileHeld);
         OI.getInstance().bind(w, OI.RightJoyButton11, OI.WhileHeld);
         */
-        driveTrain  = new DrivetrainSubsystem();
-        driveTrain.init(portMan);
+        if(driveTrainTeam == "4611") {
+            driveTrain  = new DrivetrainSubsystem();
+            driveTrain.init(portMan);
+        }
 
         pigeon = new Pigeon(21);
         pigeon.calibrate();

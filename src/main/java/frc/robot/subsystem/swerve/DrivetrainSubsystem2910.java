@@ -48,7 +48,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
     private static final DrivetrainSubsystem2910 instance = new DrivetrainSubsystem2910();
 
-    private Mk2SwerveModule[] swerveModules;
+    private SwerveModule[] swerveModules;
 
     private HolonomicMotionProfiledTrajectoryFollower follower = new HolonomicMotionProfiledTrajectoryFollower(
             FOLLOWER_TRANSLATION_CONSTANTS,
@@ -71,7 +71,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         double backLeftAngleOffset = BACK_LEFT_ANGLE_OFFSET;
         double backRightAngleOffset = BACK_RIGHT_ANGLE_OFFSET;
 
-        Mk2SwerveModule frontLeftModule = (Mk2SwerveModule) new Mk2SwerveModuleBuilder(
+        SwerveModule frontLeftModule = new Mk2SwerveModuleBuilder(
             new Vector2(TRACKWIDTH / 2.0, WHEELBASE / 2.0))
             .angleEncoder(new AnalogInput(0), FRONT_LEFT_ANGLE_OFFSET)
             .angleMotor(new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless),
@@ -80,7 +80,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
 
-        Mk2SwerveModule frontRightModule = (Mk2SwerveModule) new Mk2SwerveModuleBuilder(
+        SwerveModule frontRightModule = new Mk2SwerveModuleBuilder(
             new Vector2(TRACKWIDTH / 2.0, -WHEELBASE / 2.0))
             .angleEncoder(new AnalogInput(1), FRONT_RIGHT_ANGLE_OFFSET)
             .angleMotor(new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless),
@@ -89,7 +89,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
             
-        Mk2SwerveModule backLeftModule = (Mk2SwerveModule) new Mk2SwerveModuleBuilder(
+        SwerveModule backLeftModule = new Mk2SwerveModuleBuilder(
             new Vector2(-TRACKWIDTH / 2.0, WHEELBASE / 2.0))
             .angleEncoder(new AnalogInput(2), BACK_LEFT_ANGLE_OFFSET)
             .angleMotor(new CANSparkMax(61, CANSparkMaxLowLevel.MotorType.kBrushless),
@@ -98,7 +98,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
 
-        Mk2SwerveModule backRightModule = (Mk2SwerveModule) new Mk2SwerveModuleBuilder(
+        SwerveModule backRightModule = new Mk2SwerveModuleBuilder(
             new Vector2(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0))
             .angleEncoder(new AnalogInput(3), BACK_RIGHT_ANGLE_OFFSET)
             .angleMotor(new CANSparkMax(58, CANSparkMaxLowLevel.MotorType.kBrushless),
@@ -114,7 +114,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         backLeftModule.setName("Back Left");
         backRightModule.setName("Back Right");
 
-        swerveModules = new Mk2SwerveModule[]{
+        swerveModules = new SwerveModule[]{
                 frontLeftModule,
                 frontRightModule,
                 backLeftModule,
@@ -218,7 +218,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
             SmartDashboard.putNumber("Drivetrain Follower Angle Error", localSegment.rotation.toDegrees() - getGyroscope().getAngle().toDegrees());
         }
 
-        for (Mk2SwerveModule module : swerveModules) {
+        for (SwerveModule module : swerveModules) {
             SmartDashboard.putNumber(String.format("%s Module Drive Current Draw", module.getName()), module.getDriveCurrent());
         }
     }
