@@ -26,10 +26,13 @@ public class Telemetry extends SubsystemBase{
     private static Logger logger = Logger.getLogger(Telemetry.class.getName());
 
     private double betweenLidarDistance = 0;
-    private double lidarTolerance = 2.34;
+    private double lidarTolerance = 10.0;
     private double correction = Math.PI/180;
     private MedianFilter filterFront;
     private MedianFilter filterRear;
+
+    //targetDistance is the distance away from the wall
+    private double targetDistance = 100;
 
     public Telemetry() {
     }
@@ -60,10 +63,10 @@ public class Telemetry extends SubsystemBase{
         //multiplies speed by the value that is returned to set direction of rotation
         frontLidarDistance = frontLidar.getDistance();
         rearLidarDistance = rearLidar.getDistance();
-            if (frontLidarDistance < rearLidarDistance - lidarTolerance){
+            if (frontLidarDistance > rearLidarDistance + lidarTolerance){
                 //rotate left
                 return -1;
-            } else if(frontLidarDistance > rearLidarDistance + lidarTolerance){
+            } else if(frontLidarDistance < rearLidarDistance - lidarTolerance){
                 //rotate right
                 return 1;
             } else {
@@ -71,6 +74,19 @@ public class Telemetry extends SubsystemBase{
                 return 0;
             }
         }     
+    }
+
+    public int directionToGo(){
+        frontLidarDistance = frontLidar.getDistance();
+        if(frontLidarDistance > targetDistance + lidarTolerance){
+            return -1;
+        }
+        else if(frontLidarDistance < targetDistance - lidarTolerance){
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
     
     /*

@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystem.telemetry.commands;
 
 import java.util.logging.Logger;
@@ -15,31 +8,34 @@ import frc.robot.subsystem.SubsystemFactory;
 
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 
-public class SquareSelf extends CommandBase {
+public class GoToHorizontalDistance extends CommandBase {
+    
   /**
    * Creates a new SquareSelf.
    */
+  
   private Telemetry telemetry;
   private boolean stop;
   private double targetDistance;
-  private static Logger logger = Logger.getLogger(SquareSelf.class.getName());
+  private static Logger logger = Logger.getLogger(GoToHorizontalDistance.class.getName());
 
-  private int direction = 0;
+  private int directionGoToHorizontalDistance = 0;
+
 
   private double rotSpeed = 0.1;
 
-  public SquareSelf(Telemetry sqs, double td) {
+  public GoToHorizontalDistance(Telemetry sqs, double td) {
     // Use addRequirements() here to declare subsystem dependencies.
     telemetry = sqs;
     targetDistance = td;
     addRequirements(sqs);
-    logger.info("creates squareSelf");
+    logger.info("creates goToHorizontalDistance");
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    logger.info("starts squareSelf");
+    logger.info("starts goToHorizontalDistance");
   stop = false;
 
   //stop = true; why is there stop = true?
@@ -48,12 +44,12 @@ public class SquareSelf extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    direction = telemetry.whereAmI();
-    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, 0), rotSpeed * direction, true);
-    logger.info("rotating");
-    if(telemetry.whereAmI() == 0)
+    directionGoToHorizontalDistance = telemetry.directionToGo();
+    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, rotSpeed * directionGoToHorizontalDistance), 0, true);
+    logger.info("moving horizontal");
+    if(telemetry.directionToGo() == 0)
       stop = true;
-      logger.info("checking if square");
+      logger.info("checking if there yet");
   }
 
   // Called once the command ends or is interrupted.
@@ -65,8 +61,8 @@ public class SquareSelf extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    logger.info("checking if square");
-    if(telemetry.whereAmI() == 0)
+    logger.info("checking if there yet");
+    if(telemetry.directionToGo() == 0)
       return stop;
     else{
       return false;
