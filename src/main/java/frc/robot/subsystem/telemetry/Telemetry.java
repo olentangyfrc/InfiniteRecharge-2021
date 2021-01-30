@@ -37,7 +37,7 @@ public class Telemetry extends SubsystemBase{
     public void init(PortMan portMan) throws Exception{
         logger.entering(Telemetry.class.getName(), "init()");
 
-        //frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital4_label, "Telemetry.frontLidar"));
+        frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital5_label, "Telemetry.frontLidar"));
         rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital1_label, "Telemetry.rearLidar"));
         filterFront = new MedianFilter(10);
         filterRear = new MedianFilter(10);
@@ -48,14 +48,22 @@ public class Telemetry extends SubsystemBase{
         logger.exiting(Telemetry.class.getName(), "init()");
     }
 
+    public boolean isSquare(double tolerance){
+        if (Math.abs(getFrontLidarDistance() - getRearLidarDistance()) <= tolerance)
+            return true;
+        else
+            return false;
+    }
+
     public int whereAmI(){
     {
         //multiplies speed by the value that is returned to set direction of rotation
-        position.updatePosition();
-            if (position.gety1() < position.gety2() - lidarTolerance){
+        frontLidarDistance = frontLidar.getDistance();
+        rearLidarDistance = rearLidar.getDistance();
+            if (frontLidarDistance < rearLidarDistance - lidarTolerance){
                 //rotate left
                 return -1;
-            } else if(position.gety1() > position.gety2() + lidarTolerance){
+            } else if(frontLidarDistance > rearLidarDistance + lidarTolerance){
                 //rotate right
                 return 1;
             } else {
@@ -147,7 +155,7 @@ public class Telemetry extends SubsystemBase{
     public double getFrontLidarDistance(){
         if (frontLidar == null)
             return 0.0;
-        return filterFront.calculate(frontLidar.getDistance() - 10);
+        return filterFront.calculate(frontLidar.getDistance());
     }
 
     public double getRearLidarDistance(){

@@ -27,6 +27,7 @@ import frc.robot.subsystem.intake.commands.IntakeSpinForward;
 import frc.robot.subsystem.intake.commands.IntakeStop;
 import frc.robot.subsystem.intake.commands.IntakeUp;
 import frc.robot.subsystem.telemetry.Telemetry;
+import frc.robot.subsystem.telemetry.commands.SquareSelf;
 import frc.robot.subsystem.telemetry.Pigeon;
 import frc.robot.subsystem.telemetry.commands.SquareSelf;
 import frc.robot.subsystem.onewheelshooter.OneWheelShooter;
@@ -258,6 +259,9 @@ public class SubsystemFactory {
         telemetry = new Telemetry();
         telemetry.init(portMan);
         displayManager.addTelemetry(telemetry);
+
+        SquareSelf ccc = new SquareSelf(telemetry, 2.34);
+        OI.getInstance().bind(ccc, OI.LeftJoyButton10, OI.WhenPressed);
 
         //Command Groups
         /*
