@@ -144,6 +144,11 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
             this.signal = new HolonomicDriveSignal(translation, rotation, fieldOriented);
         }
     }
+    public void holonomicDrive(HolonomicDriveSignal sig) {
+        synchronized (lock) {
+            this.signal = sig;
+        }
+    }
 
     @Override
     public synchronized void updateKinematics(double timestamp) {
