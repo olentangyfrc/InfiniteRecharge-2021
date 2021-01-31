@@ -62,6 +62,7 @@ public class FollowTrajectoryCommand extends Command {
         if(sig.isPresent()) {
             driveTrain.holonomicDrive(sig.get());
         }
+        lastExecute = Instant.now();
     }
 
     @Override
