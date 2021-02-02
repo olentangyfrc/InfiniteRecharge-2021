@@ -78,13 +78,16 @@ public class Telemetry extends SubsystemBase{
 
     public int directionToGo(){
         frontLidarDistance = frontLidar.getDistance();
-        if(frontLidarDistance > targetDistance + lidarTolerance){
+        if(frontLidarDistance > frontLidarDistance - targetDistance + lidarTolerance){
+            //go left
             return -1;
         }
-        else if(frontLidarDistance < targetDistance - lidarTolerance){
+        else if(frontLidarDistance < frontLidarDistance + targetDistance - lidarTolerance){
+            //go right
             return 1;
         }
         else {
+            //already at target
             return 0;
         }
     }

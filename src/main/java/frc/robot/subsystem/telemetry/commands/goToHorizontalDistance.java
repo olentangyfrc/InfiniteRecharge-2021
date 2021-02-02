@@ -16,7 +16,7 @@ public class GoToHorizontalDistance extends CommandBase {
   
   private Telemetry telemetry;
   private boolean stop;
-  private double targetDistance;
+  private double lidarTolerance;
   private static Logger logger = Logger.getLogger(GoToHorizontalDistance.class.getName());
 
   private int directionGoToHorizontalDistance = 0;
@@ -27,7 +27,7 @@ public class GoToHorizontalDistance extends CommandBase {
   public GoToHorizontalDistance(Telemetry sqs, double td) {
     // Use addRequirements() here to declare subsystem dependencies.
     telemetry = sqs;
-    targetDistance = td;
+    lidarTolerance = td;
     addRequirements(sqs);
     logger.info("creates goToHorizontalDistance");
   }
