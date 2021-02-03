@@ -31,8 +31,10 @@ public class Telemetry extends SubsystemBase{
     private MedianFilter filterFront;
     private MedianFilter filterRear;
 
+    private int horDirection = 0;
+
     //targetDistance is the distance away from the wall
-    private double targetDistance = 100;
+    private double targetDistance = 20;
 
     public Telemetry() {
     }
@@ -78,11 +80,11 @@ public class Telemetry extends SubsystemBase{
 
     public int directionToGo(){
         frontLidarDistance = frontLidar.getDistance();
-        if(frontLidarDistance > frontLidarDistance - targetDistance + lidarTolerance || frontLidarDistance > frontLidarDistance - targetDistance - tolerance){
+        if(Math.abs(frontLidarDistance - targetDistance) > lidarTolerance){
             //go left
             return -1;
         }
-        else if(frontLidarDistance < frontLidarDistance + targetDistance - lidarTolerance || frontLidarDistance < frontLidarDistance + targetDistance + lidarTolerance){
+        else if(Math.abs(frontLidarDistance - targetDistance) < lidarTolerance){
             //go right
             return 1;
         }
@@ -92,84 +94,6 @@ public class Telemetry extends SubsystemBase{
         }
     }
     
-    /*
-    //breaks lidar on shuffleboard
-    public boolean isSquare(double targetDistance)
-    {
-        frontLidarDistance = frontLidar.getDistance();
-        rearLidarDistance = rearLidar.getDistance();
-
-        if (Math.abs(frontLidarDistance-targetDistance) > lidarTolerance || Math.abs(rearLidarDistance-targetDistance) > lidarTolerance || Math.abs(frontLidarDistance-rearLidarDistance) > lidarTolerance)
-        {
-            double angleError = Math.atan((Math.max(frontLidarDistance, rearLidarDistance)-Math.min(frontLidarDistance, rearLidarDistance))/betweenLidarDistance);
-
-            if (frontLidarDistance*Math.cos(angleError)-targetDistance > rearLidarDistance*Math.cos(angleError)-targetDistance)
-            {
-                if (frontLidarDistance < rearLidarDistance)
-                {
-                    //move front wheels right angleError, turn right
-                }
-                else
-                {
-                    //move front wheels left angleError, turn left
-                }
-            }
-            else
-            {
-                if (frontLidarDistance < rearLidarDistance)
-                {
-                    //move back wheels left angleError, turn right
-                }
-                else
-                {
-                    //move back wheels right angleError, turn left
-                }
-            }
-
-            while(Math.abs(frontLidarDistance-rearLidarDistance) > lidarTolerance)
-            {
-                if (frontLidarDistance*Math.cos(angleError)-targetDistance > rearLidarDistance*Math.cos(angleError)-targetDistance)
-                {
-                    if (frontLidarDistance < rearLidarDistance)
-                    {
-                        //move front wheels right correction, turn right
-                    }
-                    else
-                    {
-                        //move front wheels left correction, turn left
-                    }
-                
-                }
-                else
-                {
-                    if (frontLidarDistance < rearLidarDistance)
-                    {
-                        //move back wheels left correction, turn right
-                    }
-                    else
-                    {
-                        //move back wheels right correction, turn left
-                    }
-                }
-            }
-            
-            double distanceError = Math.abs(frontLidarDistance - targetDistance);
-
-            if (distanceError > lidarTolerance)
-            {
-                if (frontLidarDistance > targetDistance)
-                {
-                    //move left distanceError
-                }
-                else
-                {
-                    //move right distanceError
-                }
-            }
-        }
-        return true;
-    }
-    */
 
     public double getFrontLidarDistance(){
         if (frontLidar == null)
@@ -184,11 +108,6 @@ public class Telemetry extends SubsystemBase{
         return filterRear.calculate(rearLidar.getDistance());
     }
 
-    /*public boolean isSquare()
-    {
-        return whereAmI(100);
-    }
-    */
     
     public double getTolerance(){
         return lidarTolerance;
@@ -200,5 +119,9 @@ public class Telemetry extends SubsystemBase{
 
     public double getBetweenLidar(){
         return betweenLidarDistance;
+    }
+
+    public void setHorDirection(int dir){
+        horDirection = dir;
     }
 }

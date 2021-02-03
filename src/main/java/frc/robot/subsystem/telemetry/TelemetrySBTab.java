@@ -26,6 +26,8 @@ public class TelemetrySBTab implements SBInterface {
     public NetworkTableEntry rearDistance;
     public NetworkTableEntry isSquare;
     public NetworkTableEntry tolerance;
+    public NetworkTableEntry horizontalTolerance;
+    public NetworkTableEntry horizontalDirection;
     public double lidarTolerance = 2.34;
 
     public TelemetrySBTab(Telemetry te){
@@ -37,6 +39,9 @@ public class TelemetrySBTab implements SBInterface {
         rearDistance = tab.add("Rear Lidar Distance", 0).getEntry();
         isSquare = tab.add("Is Squared?", false).getEntry();
         tolerance = tab.add("Lidar Tolerance", 0.0).getEntry();
+        horizontalTolerance = tab.add("Horizontal Lidar Tolerance", 0.0).getEntry();
+        horizontalDirection = tab.add("Horizontal Direction", 0.0).getEntry();
+
     }
     public void update(){
         isSquare.setBoolean(telemetry.isSquare(lidarTolerance));
@@ -44,6 +49,7 @@ public class TelemetrySBTab implements SBInterface {
         rearDistance.setDouble(telemetry.getRearLidarDistance());
        // tolerance.setDouble(telemetry.getTolerance());
        // telemetry.setTolerance(tolerance.getDouble(5.0));
-        telemetry.setTolerance(tolerance.getDouble(2.34));
+        telemetry.setTolerance(tolerance.getDouble(10.0));
+        telemetry.setHorDirection(telemetry.directionToGo());
     }
 }
