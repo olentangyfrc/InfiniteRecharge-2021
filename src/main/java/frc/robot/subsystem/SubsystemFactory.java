@@ -58,7 +58,7 @@ import frc.robot.subsystem.transport.Transport;
 import frc.robot.subsystem.transport.commands.*;
 import frc.robot.subsystem.transport.commands.TakeIn;
 import frc.robot.subsystem.transport.commands.StopTransport;
-import frc.robot.subsystem.swerve.DrivetrainSubsystem;
+import frc.robot.subsystem.swerve.DrivetrainSubsystem2910;
 
 public class SubsystemFactory {
 
@@ -80,7 +80,7 @@ public class SubsystemFactory {
     private OneWheelShooter oneWheelShooter;
     private Telemetry telemetry;
     private PixyLineCam pixyLineCam;
-    private DrivetrainSubsystem driveTrain;
+    private DrivetrainSubsystem2910 driveTrain;
     private Intake intake;
     private Winch winch;
     private Pigeon pigeon;
@@ -107,26 +107,22 @@ public class SubsystemFactory {
         subsystemInterfaceList = new ArrayList<SBInterface>();
         pdp = new PowerDistributionPanel(1);
 
-        initComp(portMan, "2910");
+        initComp(portMan);
     }
 
 
-    private void initComp(PortMan portMan, String driveTrainTeam) throws Exception {
+    private void initComp(PortMan portMan) throws Exception {
 
         logger.info("initiatizing");
 
-
+        driveTrain = DrivetrainSubsystem2910.getInstance();
         /*
         WinchUp w = new WinchUp(winch);
         OI.getInstance().bind(w, OI.RightButtonBox4, OI.WhileHeld);
         OI.getInstance().bind(w, OI.RightJoyButton11, OI.WhileHeld);
         */
-        if(driveTrainTeam == "4611") {
-            driveTrain  = new DrivetrainSubsystem();
-            driveTrain.init(portMan);
-        }
 
-        pigeon = new Pigeon(21);
+        pigeon = driveTrain.getGyroscope();
         pigeon.calibrate();
         pigeon.setInverted(true);
 
@@ -292,7 +288,7 @@ public class SubsystemFactory {
     public ControlPanel getControlPanel() {
         return controlPanel;
     }
-    public DrivetrainSubsystem getDriveTrain(){
+    public DrivetrainSubsystem2910 getDriveTrain(){
         return driveTrain;
     }
     public Climber getClimber() {

@@ -38,6 +38,9 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.robot.subsystem.SBInterface;
 import frc.robot.subsystem.controlpanel.ControlPanelSBTab;
 
+import java.time.Instant;
+import java.time.Duration;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -50,6 +53,9 @@ public class Robot extends TimedRobot {
   static Logger logger = Logger.getLogger(Robot.class.getName());
   ControlPanel controlPanel;
   private static SubsystemFactory subsystemFactory;
+
+  private Instant initTime;
+  private Instant currentTime;
 
   private DisplayManager dManager;
   private ShuffleboardTab tab;
@@ -65,6 +71,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    initTime = Instant.now();
+
     subsystemFactory = SubsystemFactory.getInstance();
 
     tab = Shuffleboard.getTab("Auton");
@@ -96,8 +104,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-       CommandScheduler.getInstance().run();
-       dManager.update();
+      CommandScheduler.getInstance().run();
+      Scheduler.getInstance().run();
+      dManager.update();
+      currentTime = Instant.now();
+      SubsystemFactory.getInstance().getDriveTrain().updateKinematics(Duration.between(initTime, currentTime).toMillis());
+       
   }
 
   /**

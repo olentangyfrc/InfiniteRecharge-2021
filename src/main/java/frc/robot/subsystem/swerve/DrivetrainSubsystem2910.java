@@ -11,15 +11,20 @@ import frc.common.drivers.Mk2SwerveModuleBuilder;
 import frc.common.control.*;
 import frc.common.drivers.Gyroscope;
 import frc.common.drivers.SwerveModule;
+import frc.common.drivers.NavX.Axis;
 import frc.common.math.RigidTransform2;
+import frc.common.math.Rotation2;
 import frc.common.math.Vector2;
 import frc.common.subsystems.SwerveDrivetrain;
 import frc.common.util.DrivetrainFeedforwardConstants;
 import frc.common.util.HolonomicDriveSignal;
 import frc.common.util.HolonomicFeedforward;
 import frc.robot.subsystem.SubsystemFactory;
+import frc.robot.subsystem.telemetry.Pigeon;
 
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     private static final double TRACKWIDTH = 23.5;
@@ -27,6 +32,9 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
     private static final double MAX_VELOCITY = 12.0 * 12.0;
 
+    static Logger logger = Logger.getLogger(DrivetrainSubsystem2910.class.getName());
+
+    private Pigeon pigeon = new Pigeon(21);
 
     public static final ITrajectoryConstraint[] CONSTRAINTS = {
             new MaxVelocityConstraint(MAX_VELOCITY),
@@ -163,11 +171,11 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         }
         RigidTransform2 currentPose = new RigidTransform2(
                 getKinematicPosition(),
-                getGyroscope().getAngle()
+                Rotation2.fromDegrees(pigeon.getAxis(Axis.YAW))
         );
 
-        Optional<HolonomicDriveSignal> optSignal = follower.update(currentPose, getKinematicVelocity(),
-                getGyroscope().getRate(), timestamp, dt);
+        Optional<HolonomicDriveSignal> optSignal = follower.update(currentPose, getKinematicVelocity(), pigeon.getAngularVelocity(),
+                timestamp, dt);
         HolonomicDriveSignal localSignal;
 
         if (optSignal.isPresent()) {
@@ -238,8 +246,8 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     }
 
     @Override
-    public Gyroscope getGyroscope() {
-        return SubsystemFactory.getInstance().getGyro();
+    public Pigeon getGyroscope() {
+        return pigeon;
     }
 
     @Override
@@ -254,6 +262,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
     @Override
     protected void initDefaultCommand() {
+        logger.log(Level.INFO, "drivetrain initdefaultcommand");
         setDefaultCommand(new HolonomicDriveCommand());
     }
 

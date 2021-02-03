@@ -19,6 +19,9 @@ import java.util.Optional;
 import java.time.Instant;
 import java.time.Duration;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class FollowTrajectoryCommand extends Command {
     private final Supplier<Trajectory> trajectorySupplier;
     private DrivetrainSubsystem2910 driveTrain;
@@ -30,6 +33,8 @@ public class FollowTrajectoryCommand extends Command {
 
     private Instant initTime;
     private Instant lastExecute;
+
+    static Logger logger = Logger.getLogger(FollowTrajectoryCommand.class.getName());
 
     public FollowTrajectoryCommand(Trajectory trajectory) {
         this(() -> trajectory);
@@ -49,20 +54,18 @@ public class FollowTrajectoryCommand extends Command {
         pigeon = SubsystemFactory.getInstance().getGyro();
         driveTrain.resetKinematics(Vector2.ZERO, Timer.getFPGATimestamp());
         driveTrain.getFollower().follow(trajectory);
-        
-        initTime = Instant.now();
-        lastExecute = Instant.now();
     }
 
     @Override
     protected void execute() {
-        Instant currentTime = Instant.now();
+        /*
         RigidTransform2 pos = new RigidTransform2(driveTrain.getKinematicPosition(),Rotation2.fromDegrees(pigeon.getAxis(Axis.YAW)));
         Optional<HolonomicDriveSignal> sig = driveTrain.getFollower().update(pos, driveTrain.getKinematicVelocity(), pigeon.getAngularVelocity(), Duration.between(initTime, currentTime).toMillis(), Duration.between(lastExecute, currentTime).toMillis());
         if(sig.isPresent()) {
             driveTrain.holonomicDrive(sig.get());
         }
-        lastExecute = Instant.now();
+        lastExecute = Instant.now();*/
+
     }
 
     @Override
