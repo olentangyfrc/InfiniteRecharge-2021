@@ -16,18 +16,18 @@ public class GoToHorizontalDistance extends CommandBase {
   
   private Telemetry telemetry;
   private boolean stop;
-  private double targetDistance;
+  private double lidarTolerance;
   private static Logger logger = Logger.getLogger(GoToHorizontalDistance.class.getName());
 
   private int directionGoToHorizontalDistance = 0;
 
 
-  private double rotSpeed = 0.1;
+  private double speed = 0.1;
 
   public GoToHorizontalDistance(Telemetry sqs, double td) {
     // Use addRequirements() here to declare subsystem dependencies.
     telemetry = sqs;
-    targetDistance = td;
+    lidarTolerance = td;
     addRequirements(sqs);
     logger.info("creates goToHorizontalDistance");
   }
@@ -45,7 +45,7 @@ public class GoToHorizontalDistance extends CommandBase {
   @Override
   public void execute() {
     directionGoToHorizontalDistance = telemetry.directionToGo();
-    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, rotSpeed * directionGoToHorizontalDistance), 0, true);
+    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, speed * directionGoToHorizontalDistance), 0, true);
     logger.info("moving horizontal");
     if(telemetry.directionToGo() == 0)
       stop = true;

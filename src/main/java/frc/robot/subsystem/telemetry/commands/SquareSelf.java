@@ -21,7 +21,7 @@ public class SquareSelf extends CommandBase {
    */
   private Telemetry telemetry;
   private boolean stop;
-  private double targetDistance;
+  private double lidarTolerance;
   private static Logger logger = Logger.getLogger(SquareSelf.class.getName());
 
   private int direction = 0;
@@ -31,7 +31,7 @@ public class SquareSelf extends CommandBase {
   public SquareSelf(Telemetry sqs, double td) {
     // Use addRequirements() here to declare subsystem dependencies.
     telemetry = sqs;
-    targetDistance = td;
+    lidarTolerance = td;
     addRequirements(sqs);
     logger.info("creates squareSelf");
   }
