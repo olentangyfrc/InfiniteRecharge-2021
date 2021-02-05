@@ -34,7 +34,7 @@ public class Telemetry extends SubsystemBase{
     private int horDirection = 0;
 
     //targetDistance is the distance away from the wall
-    private double targetDistance = 20;
+    private double targetDistance = 100;
 
     public Telemetry() {
     }
@@ -65,10 +65,10 @@ public class Telemetry extends SubsystemBase{
         //multiplies speed by the value that is returned to set direction of rotation
         frontLidarDistance = frontLidar.getDistance();
         rearLidarDistance = rearLidar.getDistance();
-            if (frontLidarDistance > rearLidarDistance + lidarTolerance){
+            if (frontLidarDistance > rearLidarDistance && !isSquare(lidarTolerance)){
                 //rotate left
                 return -1;
-            } else if(frontLidarDistance < rearLidarDistance - lidarTolerance){
+            } else if(frontLidarDistance < rearLidarDistance && !isSquare(lidarTolerance)){
                 //rotate right
                 return 1;
             } else {
@@ -80,17 +80,17 @@ public class Telemetry extends SubsystemBase{
 
     public int directionToGo(){
         frontLidarDistance = frontLidar.getDistance();
-        if(Math.abs(frontLidarDistance - targetDistance) > lidarTolerance){
-            //go left
-            return -1;
-        }
-        else if(Math.abs(frontLidarDistance - targetDistance) < lidarTolerance){
-            //go right
-            return 1;
-        }
-        else {
+        if(Math.abs(frontLidarDistance - targetDistance) < lidarTolerance){
             //already at target
             return 0;
+        }
+        else if(frontLidarDistance - targetDistance > 0){
+            //go left
+            return 1;
+        }
+        else{
+            //go right
+            return -1;
         }
     }
     
@@ -123,5 +123,10 @@ public class Telemetry extends SubsystemBase{
 
     public void setHorDirection(int dir){
         horDirection = dir;
+    }
+
+    public void setTargetDistance(double dis)
+    {
+        targetDistance = dis;
     }
 }
