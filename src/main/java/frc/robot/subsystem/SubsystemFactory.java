@@ -29,6 +29,7 @@ import frc.robot.subsystem.intake.commands.IntakeUp;
 import frc.robot.subsystem.telemetry.Telemetry;
 import frc.robot.subsystem.telemetry.commands.SquareSelf;
 import frc.robot.subsystem.telemetry.commands.GoToHorizontalDistance;
+import frc.robot.subsystem.telemetry.commands.GoToVerticalDistance;
 import frc.robot.subsystem.telemetry.Pigeon;
 import frc.robot.subsystem.onewheelshooter.OneWheelShooter;
 import frc.robot.subsystem.winch.Winch;
@@ -265,6 +266,9 @@ public class SubsystemFactory {
 
         GoToHorizontalDistance ccd= new GoToHorizontalDistance(telemetry, 2.34);
         OI.getInstance().bind(ccd, OI.LeftJoyButton7, OI.WhenPressed);
+
+        GoToVerticalDistance cce = new GoToVerticalDistance(telemetry, 2.34);
+        OI.getInstance().bind(cce, OI.LeftJoyButton10, OI.WhenPressed);
 
         //Command Groups
         /*

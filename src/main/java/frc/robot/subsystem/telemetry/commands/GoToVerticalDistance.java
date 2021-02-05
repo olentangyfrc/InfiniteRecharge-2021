@@ -1,4 +1,4 @@
-/*package frc.robot.subsystem.telemetry.commands;
+package frc.robot.subsystem.telemetry.commands;
 
 import java.util.logging.Logger;
 
@@ -8,32 +8,34 @@ import frc.robot.subsystem.SubsystemFactory;
 
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 
-public class GoToDistance extends CommandBase {
+public class GoToVerticalDistance extends CommandBase {
     
-*/
-/*
+  /**
+   * Creates a new SquareSelf.
+   */
+  
   private Telemetry telemetry;
   private boolean stop;
-  private double targetDistance;
-  private static Logger logger = Logger.getLogger(SquareSelf.class.getName());
+  private double lidarTolerance;
+  private static Logger logger = Logger.getLogger(GoToHorizontalDistance.class.getName());
 
-  private int directionGoToHorizontalDistance = 0;
+  private int directionGoToVerticalDistance = 0;
 
 
-  private double rotSpeed = 0.3;
+  private double speed = 0.1;
 
-  public GoToHorizontalDistance(Telemetry sqs, double td) {
+  public GoToVerticalDistance(Telemetry sqs, double td) {
     // Use addRequirements() here to declare subsystem dependencies.
     telemetry = sqs;
-    targetDistance = td;
+    lidarTolerance = td;
     addRequirements(sqs);
-    logger.info("creates goToHorizontalDistance");
+    logger.info("creates goToVerticalDistance");
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    logger.info("starts goToHorizontalDistance");
+    logger.info("starts goToVerticalDistance");
   stop = false;
 
   //stop = true; why is there stop = true?
@@ -42,10 +44,10 @@ public class GoToDistance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    directionGoToHorizontalDistance = telemetry.directionToGo();
-    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(rotSpeed * directionGoToHorizontalDistance, 0), 0, true);
-    logger.info("moving horizontal");
-    if(telemetry.directionToGo() == 0)
+    directionGoToVerticalDistance = telemetry.verticalDirectionToGo();
+    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(speed * directionGoToVerticalDistance, 0), 0, true);
+    logger.info("moving vertical");
+    if(telemetry.verticalDirectionToGo() == 0)
       stop = true;
       logger.info("checking if there yet");
   }
@@ -60,11 +62,10 @@ public class GoToDistance extends CommandBase {
   @Override
   public boolean isFinished() {
     logger.info("checking if there yet");
-    if(telemetry.directionToGo() == 0)
+    if(telemetry.verticalDirectionToGo() == 0)
       return stop;
     else{
       return false;
     }
   }
 }
-*/

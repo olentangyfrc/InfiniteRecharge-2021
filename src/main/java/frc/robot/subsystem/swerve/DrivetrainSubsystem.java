@@ -31,10 +31,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(171.8);
 */
     
-    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(6.02);
-    private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(311.6);
-    private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(119.3);
-    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(262.9);
+    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(2.6);
+    private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(311.8);
+    private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(120.2);
+    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(259.2);
     
 
     private SwerveModule frontLeftModule ;

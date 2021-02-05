@@ -18,10 +18,11 @@ import javax.lang.model.util.ElementScanner6;
 
 public class Telemetry extends SubsystemBase{
     
-    private LidarPWM frontLidar, rearLidar;
-    private double frontLidarDistance, rearLidarDistance;
+    private LidarPWM frontLidar, rearLidar, backLidar;
+    private double frontLidarDistance, rearLidarDistance, backLidarDistance;
     private double frontLidarOffset = 0;
     private double rearLidarOffset = 0;
+    private double backLidarOffset = 0;
 
     private static Logger logger = Logger.getLogger(Telemetry.class.getName());
 
@@ -30,11 +31,14 @@ public class Telemetry extends SubsystemBase{
     private double correction = Math.PI/180;
     private MedianFilter filterFront;
     private MedianFilter filterRear;
+    private MedianFilter filterBack;
 
     private int horDirection = 0;
+    private int verticalDirection = 0;
 
     //targetDistance is the distance away from the wall
-    private double targetDistance = 100;
+    private double horizontalTargetDistance = 100;
+    private double verticalTargetDistance = 100;
 
     public Telemetry() {
     }
@@ -44,8 +48,10 @@ public class Telemetry extends SubsystemBase{
 
         frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital1_label, "Telemetry.frontLidar"));
         rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital5_label, "Telemetry.rearLidar"));
+        backLidar = new LidarPWM(portMan.acquirePort(PortMan.digital6_label, "Telemetry.backLidar"));
         filterFront = new MedianFilter(10);
         filterRear = new MedianFilter(10);
+        filterBack = new MedianFilter(10);
 
         CameraServer.getInstance().startAutomaticCapture();
         //CameraServer.getInstance().startAutomaticCapture();
@@ -80,17 +86,33 @@ public class Telemetry extends SubsystemBase{
 
     public int directionToGo(){
         frontLidarDistance = frontLidar.getDistance();
-        if(Math.abs(frontLidarDistance - targetDistance) < lidarTolerance){
+        if(Math.abs(frontLidarDistance - horizontalTargetDistance) < lidarTolerance){
             //already at target
             return 0;
         }
-        else if(frontLidarDistance - targetDistance > 0){
+        else if(frontLidarDistance - horizontalTargetDistance > 0){
             //go left
             return 1;
         }
         else{
             //go right
             return -1;
+        }
+    }
+
+    public int verticalDirectionToGo(){
+        backLidarDistance = backLidar.getDistance();
+        if(Math.abs(backLidarDistance - verticalTargetDistance) < lidarTolerance){
+            //already at target
+            return 0;
+        }
+        else if(backLidarDistance - verticalTargetDistance > 0){
+            //go back
+            return -1;
+        }
+        else{
+            //go forward
+            return 1;
         }
     }
     
@@ -106,6 +128,12 @@ public class Telemetry extends SubsystemBase{
             return 0.0;
             
         return filterRear.calculate(rearLidar.getDistance());
+    }
+
+    public double getBackLidarDistance(){
+        if(backLidar == null)
+            return 0.0;
+        return filterBack.calculate(backLidar.getDistance());
     }
 
     
@@ -125,8 +153,18 @@ public class Telemetry extends SubsystemBase{
         horDirection = dir;
     }
 
-    public void setTargetDistance(double dis)
+    public void setHorizontalTargetDistance(double dis)
     {
-        targetDistance = dis;
+        horizontalTargetDistance = dis;
+    }
+
+    public void setVerticalTargetDistance(double dist)
+    {
+        verticalTargetDistance = dist;
+    }
+
+    public void setVerticalDirection(int dire)
+    {
+        verticalDirection = dire;
     }
 }
