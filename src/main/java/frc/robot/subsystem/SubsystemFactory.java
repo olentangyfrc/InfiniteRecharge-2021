@@ -317,7 +317,7 @@ public class SubsystemFactory {
     public OneWheelShooter getShooter(){
         return oneWheelShooter;
     }
-    public Gyroscope getGyro() {
+    public Pigeon getGyro() {
         return pigeon;
     }
 }
