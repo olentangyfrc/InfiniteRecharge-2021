@@ -5,8 +5,8 @@ public class Position {
     private double y;
 
     public Position(double x, double y, double robotWidth){
-        this.x = x - robotWidth/2;
-        this.y = y - robotWidth/2;
+        this.x = x - robotWidth/2 * 2.54;
+        this.y = y - robotWidth/2 * 2.54;
     }
 
     public void updatePosition(Position pos){
