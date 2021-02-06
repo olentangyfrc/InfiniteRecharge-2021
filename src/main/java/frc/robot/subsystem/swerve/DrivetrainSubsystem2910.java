@@ -34,7 +34,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
     static Logger logger = Logger.getLogger(DrivetrainSubsystem2910.class.getName());
 
-    private Pigeon pigeon = new Pigeon(21);
+    private Pigeon pigeon = Pigeon.getInstance();
 
     public static final ITrajectoryConstraint[] CONSTRAINTS = {
             new MaxVelocityConstraint(MAX_VELOCITY),
