@@ -7,7 +7,7 @@ import frc.common.drivers.NavX.Axis;
 
 public final class Pigeon extends Gyroscope {
     private PigeonIMU pigeon;
-    private static pigeon me;
+    private static Pigeon me;
 
     private Pigeon(int canPort) {
         pigeon = new PigeonIMU(canPort);
