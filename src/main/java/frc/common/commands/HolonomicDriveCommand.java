@@ -17,9 +17,9 @@ public class HolonomicDriveCommand extends Command {
     }
     @Override
     protected void execute() {
-        double forward = OI.getInstance().getLeftJoystickYValue();
-        double strafe = OI.getInstance().getLeftJoystickXValue();
-        double rotation = OI.getInstance().getRightJoystickXValue();
+        double forward = - OI.getInstance().getLeftJoystickYValue();
+        double strafe = - OI.getInstance().getLeftJoystickXValue();
+        double rotation = - OI.getInstance().getRightJoystickXValue();
 
         Vector2 translation = new Vector2(forward, strafe);
 

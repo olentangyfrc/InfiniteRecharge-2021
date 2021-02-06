@@ -16,9 +16,6 @@ import frc.common.drivers.NavX.Axis;
 import java.util.function.Supplier;
 import java.util.Optional;
 
-import java.time.Instant;
-import java.time.Duration;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,9 +27,6 @@ public class FollowTrajectoryCommand extends Command {
     private Trajectory trajectory;
 
     private double previousUpdate;
-
-    private Instant initTime;
-    private Instant lastExecute;
 
     static Logger logger = Logger.getLogger(FollowTrajectoryCommand.class.getName());
 
@@ -58,14 +52,6 @@ public class FollowTrajectoryCommand extends Command {
 
     @Override
     protected void execute() {
-        /*
-        RigidTransform2 pos = new RigidTransform2(driveTrain.getKinematicPosition(),Rotation2.fromDegrees(pigeon.getAxis(Axis.YAW)));
-        Optional<HolonomicDriveSignal> sig = driveTrain.getFollower().update(pos, driveTrain.getKinematicVelocity(), pigeon.getAngularVelocity(), Duration.between(initTime, currentTime).toMillis(), Duration.between(lastExecute, currentTime).toMillis());
-        if(sig.isPresent()) {
-            driveTrain.holonomicDrive(sig.get());
-        }
-        lastExecute = Instant.now();*/
-
     }
 
     @Override

@@ -41,10 +41,10 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
             new MaxAccelerationConstraint(13.0 * 12.0),
             new CentripetalAccelerationConstraint(25.0 * 12.0)
     };
-    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(6.02);
-    private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(311.6);
-    private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(119.3);
-    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(262.9);
+    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(2.6);
+    private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(311.8);
+    private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(120.2);
+    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(259.2);
 
     private static final PidConstants FOLLOWER_TRANSLATION_CONSTANTS = new PidConstants(0.05, 0.01, 0.0);
     private static final PidConstants FOLLOWER_ROTATION_CONSTANTS = new PidConstants(0.2, 0.01, 0.0);
@@ -203,6 +203,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         }
 
         super.holonomicDrive(localSignal.getTranslation(), localSignal.getRotation(), localSignal.isFieldOriented());
+        outputToSmartDashboard();
     }
 
     @Override
@@ -216,6 +217,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
             localSegment = segment;
         }
 
+        SmartDashboard.putNumber("Gyro Angle", pigeon.getAxis(Axis.YAW));
         SmartDashboard.putNumber("Drivetrain Follower Forwards", localSignal.getTranslation().x);
         SmartDashboard.putNumber("Drivetrain Follower Strafe", localSignal.getTranslation().y);
         SmartDashboard.putNumber("Drivetrain Follower Rotation", localSignal.getRotation());

@@ -123,7 +123,7 @@ public class AutonomousSelector {
             DrivetrainSubsystem2910.getInstance().getGyroscope().setAdjustmentAngle(
                     DrivetrainSubsystem2910.getInstance().getGyroscope().getUnadjustedAngle().rotateBy(startingOrientation)
             );
-        }));
+    }));
 
         // If we want to manually drive the robot, return now.
         // Drive to the first target
