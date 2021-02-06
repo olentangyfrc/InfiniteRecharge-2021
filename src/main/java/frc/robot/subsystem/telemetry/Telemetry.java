@@ -50,7 +50,7 @@ public class Telemetry extends SubsystemBase{
         logger.entering(Telemetry.class.getName(), "init()");
 
         frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital1_label, "Telemetry.frontLidar"));
-        rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital5_label, "Telemetry.rearLidar"));
+        rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital7_label, "Telemetry.rearLidar"));
         backLidar = new LidarPWM(portMan.acquirePort(PortMan.digital6_label, "Telemetry.backLidar"));
         filterFront = new MedianFilter(10);
         filterRear = new MedianFilter(10);
