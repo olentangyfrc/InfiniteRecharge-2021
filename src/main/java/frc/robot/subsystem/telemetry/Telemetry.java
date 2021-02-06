@@ -27,7 +27,7 @@ public class Telemetry extends SubsystemBase{
     private static Logger logger = Logger.getLogger(Telemetry.class.getName());
 
     private double betweenLidarDistance = 0;
-    private double lidarTolerance = 10.0;
+    private double lidarTolerance = 1.0;
     private double correction = Math.PI/180;
     private MedianFilter filterFront;
     private MedianFilter filterRear;
@@ -35,6 +35,8 @@ public class Telemetry extends SubsystemBase{
 
     private int horDirection = 0;
     private int verticalDirection = 0;
+    private double rotationalSpeed = 0.1;
+    private double translationalSpeed = 0.1;
 
     //targetDistance is the distance away from the wall
     private double horizontalTargetDistance = 100;
@@ -69,14 +71,14 @@ public class Telemetry extends SubsystemBase{
     public int whereAmI(){
     {
         //multiplies speed by the value that is returned to set direction of rotation
-        frontLidarDistance = frontLidar.getDistance();
-        rearLidarDistance = rearLidar.getDistance();
+        frontLidarDistance = Math.round(frontLidar.getDistance()) * 1.0;
+        rearLidarDistance = Math.round(rearLidar.getDistance()) * 1.0;
             if (frontLidarDistance > rearLidarDistance && !isSquare(lidarTolerance)){
                 //rotate left
-                return -1;
+                return 1;
             } else if(frontLidarDistance < rearLidarDistance && !isSquare(lidarTolerance)){
                 //rotate right
-                return 1;
+                return -1;
             } else {
                 //already square
                 return 0;
@@ -85,7 +87,7 @@ public class Telemetry extends SubsystemBase{
     }
 
     public int directionToGo(){
-        frontLidarDistance = frontLidar.getDistance();
+        frontLidarDistance = Math.round(frontLidar.getDistance()) * 1.0;
         if(Math.abs(frontLidarDistance - horizontalTargetDistance) < lidarTolerance){
             //already at target
             return 0;
@@ -101,7 +103,7 @@ public class Telemetry extends SubsystemBase{
     }
 
     public int verticalDirectionToGo(){
-        backLidarDistance = backLidar.getDistance();
+        backLidarDistance = Math.round(backLidar.getDistance()) * 1.0;
         if(Math.abs(backLidarDistance - verticalTargetDistance) < lidarTolerance){
             //already at target
             return 0;
@@ -120,20 +122,19 @@ public class Telemetry extends SubsystemBase{
     public double getFrontLidarDistance(){
         if (frontLidar == null)
             return 0.0;
-        return filterFront.calculate(frontLidar.getDistance());
+        return Math.round(filterFront.calculate(frontLidar.getDistance())) * 1.0;
     }
 
     public double getRearLidarDistance(){
         if (rearLidar == null)
             return 0.0;
-            
-        return filterRear.calculate(rearLidar.getDistance());
+        return Math.round(filterRear.calculate(rearLidar.getDistance())) * 1.0;
     }
 
     public double getBackLidarDistance(){
         if(backLidar == null)
             return 0.0;
-        return filterBack.calculate(backLidar.getDistance());
+        return Math.round(filterBack.calculate(backLidar.getDistance())) * 1.0;
     }
 
     
@@ -166,5 +167,25 @@ public class Telemetry extends SubsystemBase{
     public void setVerticalDirection(int dire)
     {
         verticalDirection = dire;
+    }
+
+    public void setRotationalSpeed(double sp)
+    {
+        rotationalSpeed = sp;
+    }
+
+    public double getRotationalSpeed()
+    {
+        return rotationalSpeed;
+    }
+
+    public void setTranslationalSpeed(double speed)
+    {
+        translationalSpeed = speed;
+    }
+
+    public double getTranslationalSpeed()
+    {
+        return translationalSpeed;
     }
 }

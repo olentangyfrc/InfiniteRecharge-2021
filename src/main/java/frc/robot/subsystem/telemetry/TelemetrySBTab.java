@@ -32,6 +32,9 @@ public class TelemetrySBTab implements SBInterface {
     public NetworkTableEntry horizontalTargetDistance;
     public NetworkTableEntry verticalTargetDistance;
     public NetworkTableEntry verticalDirection;
+    public NetworkTableEntry rotationalSpeed;
+    public NetworkTableEntry translationalSpeed;
+    public NetworkTableEntry lidarDifference;
     public double lidarTolerance = 2.34;
 
     public TelemetrySBTab(Telemetry te){
@@ -49,6 +52,9 @@ public class TelemetrySBTab implements SBInterface {
         horizontalTargetDistance = tab.add("Horizontal Target Distance", 0.0).getEntry();
         verticalTargetDistance = tab.add("Vertical Target Distance", 0.0).getEntry();
         verticalDirection = tab.add("Vertical Direction", 0.0).getEntry();
+        rotationalSpeed = tab.add("Rotational Speed", 0.0).getEntry();
+        translationalSpeed = tab.add("Translational Speed", 0.0).getEntry();
+        lidarDifference = tab.add("Lidar Difference", 0.0).getEntry();
 
     }
     public void update(){
@@ -56,6 +62,7 @@ public class TelemetrySBTab implements SBInterface {
         frontDistance.setDouble(telemetry.getFrontLidarDistance());
         rearDistance.setDouble(telemetry.getRearLidarDistance());
         backDistance.setDouble(telemetry.getBackLidarDistance());
+        lidarDifference.setDouble(Math.abs(telemetry.getFrontLidarDistance() - telemetry.getRearLidarDistance()));
        // tolerance.setDouble(telemetry.getTolerance());
        // telemetry.setTolerance(tolerance.getDouble(5.0));
         telemetry.setTolerance(tolerance.getDouble(10.0));
@@ -64,5 +71,7 @@ public class TelemetrySBTab implements SBInterface {
         telemetry.setHorizontalTargetDistance(horizontalTargetDistance.getDouble(10.0));
         telemetry.setVerticalDirection(telemetry.verticalDirectionToGo());
         telemetry.setVerticalTargetDistance(verticalTargetDistance.getDouble(10.0));
+        telemetry.setRotationalSpeed(rotationalSpeed.getDouble(0.1));
+        telemetry.setTranslationalSpeed(translationalSpeed.getDouble(0.1));
     }
 }

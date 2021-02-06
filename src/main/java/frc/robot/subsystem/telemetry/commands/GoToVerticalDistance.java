@@ -21,9 +21,6 @@ public class GoToVerticalDistance extends CommandBase {
 
   private int directionGoToVerticalDistance = 0;
 
-
-  private double speed = 0.1;
-
   public GoToVerticalDistance(Telemetry sqs, double td) {
     // Use addRequirements() here to declare subsystem dependencies.
     telemetry = sqs;
@@ -45,7 +42,7 @@ public class GoToVerticalDistance extends CommandBase {
   @Override
   public void execute() {
     directionGoToVerticalDistance = telemetry.verticalDirectionToGo();
-    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(speed * directionGoToVerticalDistance, 0), 0, true);
+    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(telemetry.getTranslationalSpeed() * directionGoToVerticalDistance, 0), 0, true);
     logger.info("moving vertical");
     if(telemetry.verticalDirectionToGo() == 0)
       stop = true;

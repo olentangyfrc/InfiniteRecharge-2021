@@ -26,8 +26,6 @@ public class SquareSelf extends CommandBase {
 
   private int direction = 0;
 
-  private double rotSpeed = 0.1;
-
   public SquareSelf(Telemetry sqs, double td) {
     // Use addRequirements() here to declare subsystem dependencies.
     telemetry = sqs;
@@ -49,7 +47,7 @@ public class SquareSelf extends CommandBase {
   @Override
   public void execute() {
     direction = telemetry.whereAmI();
-    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, 0), rotSpeed * direction, true);
+    SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, 0), telemetry.getRotationalSpeed() * direction, true);
     logger.info("rotating");
     if(telemetry.whereAmI() == 0)
       stop = true;
