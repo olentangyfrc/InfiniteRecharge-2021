@@ -3,10 +3,16 @@ package frc.robot.subsystem.telemetry;
 public class Position {
     private double x;
     private double y;
+    double robotWidth = 24;
 
-    public Position(double x, double y, double robotWidth){
+    public Position(double x, double y){
         this.x = x - robotWidth/2 * 2.54;
         this.y = y - robotWidth/2 * 2.54;
+    }
+
+    public Position(int x, int y){
+        this.x = ((double)x - robotWidth/2) * 2.54;
+        this.y = ((double)y - robotWidth/2) * 2.54;
     }
 
     public void updatePosition(Position pos){
