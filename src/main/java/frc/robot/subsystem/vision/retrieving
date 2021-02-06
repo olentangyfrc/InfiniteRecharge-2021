@@ -1,0 +1,40 @@
+package frc.robot.subsystem.telemetry.commands;
+
+
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystem.SubsystemFactory;
+
+import edu.wpi.first.wpilibj.geometry.Translation2d;
+
+public class DriveBase extends Subsystem {
+   private ShuffleboardTab tab = Shuffleboard.getTab("Drive");
+   private NetworkTableEntry direction =
+       tab.add("DirectionofBall", 1)
+          .getEntry(BallDirection);
+
+
+   public void drive() {
+     String directionofball = direction.getString();
+        if (direction.equals("left")){
+            dir = 1
+        }
+        if (direction.equals("center")){
+            dir = 0
+        }
+        if (direction.equals("right")){
+            dir = -1
+        }
+        if (getString.equals("left")){
+            SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, 0), rotSpeed * dir, true);
+
+        }elif (getString.equals("right")){
+            SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, 0), rotSpeed * dir, true);
+
+        }else (getString.equals("center")){
+            SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, 0), rotSpeed * dir, true);
+
+        }
+
+    
+   }
+}
