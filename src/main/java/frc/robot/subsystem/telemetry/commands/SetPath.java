@@ -1,5 +1,6 @@
 package frc.robot.subsystem.telemetry.commands;
 
+import frc.robot.subsystem.telemetry.Path;
 import frc.robot.subsystem.telemetry.Position;
 import java.util.ArrayList;
 
@@ -26,7 +27,6 @@ public class SetPath {
     }
 
     public void makePath2(){
-
         
         paths.add(path2);
     }
