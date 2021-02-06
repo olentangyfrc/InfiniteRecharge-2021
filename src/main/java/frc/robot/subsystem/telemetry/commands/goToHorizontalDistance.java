@@ -27,13 +27,13 @@ public class GoToHorizontalDistance extends CommandBase {
     telemetry = sqs;
     lidarTolerance = td;
     addRequirements(sqs);
-    logger.info("creates goToHorizontalDistance");
+    logger.info("creates GoToHorizontalDistance");
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    logger.info("starts goToHorizontalDistance");
+    logger.info("starts GoToHorizontalDistance");
   stop = false;
 
   //stop = true; why is there stop = true?

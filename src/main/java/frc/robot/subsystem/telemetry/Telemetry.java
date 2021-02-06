@@ -70,21 +70,19 @@ public class Telemetry extends SubsystemBase{
     }
 
     public int whereAmI(){
-    {
         //multiplies speed by the value that is returned to set direction of rotation
         frontLidarDistance = Math.round(frontLidar.getDistance()) * 1.0;
         rearLidarDistance = Math.round(rearLidar.getDistance()) * 1.0;
-            if (frontLidarDistance > rearLidarDistance && !isSquare(lidarTolerance)){
-                //rotate left
-                return 1;
-            } else if(frontLidarDistance < rearLidarDistance && !isSquare(lidarTolerance)){
-                //rotate right
-                return -1;
-            } else {
-                //already square
-                return 0;
-            }
-        }     
+        
+        if(isSquare(lidarTolerance)){
+            return 0;
+        } else if (frontLidarDistance > rearLidarDistance){
+            //rotate left
+            return 1;
+        } else {
+            //rotate right
+            return -1;
+        }
     }
 
     public int directionToGo(){
