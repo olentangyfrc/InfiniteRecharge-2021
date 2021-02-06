@@ -57,7 +57,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void init(PortMan portMan) throws Exception {
 
         //private final Gyroscope gyroscope = new NavX(SPI.Port.kMXP);
-        pigeon      = new Pigeon(21);
+        pigeon = Pigeon.getInstance();
 
         pigeon.calibrate();
         pigeon.setInverted(true); // You might not need to invert the gyro
