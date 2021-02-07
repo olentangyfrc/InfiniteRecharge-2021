@@ -5,6 +5,9 @@ import frc.common.math.Vector2;
 
 import java.util.Optional;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public abstract class TrajectoryFollower<DriveSignalType> {
     private final Object trajectoryLock = new Object();
 
@@ -43,6 +46,8 @@ public abstract class TrajectoryFollower<DriveSignalType> {
      * @return true if the path is done
      */
     protected abstract boolean isFinished();
+
+    static Logger logger = Logger.getLogger(TrajectoryFollower.class.getName());
 
     /**
      * Resets the follower's internal state. This is called when a new trajectory is started.
@@ -91,7 +96,7 @@ public abstract class TrajectoryFollower<DriveSignalType> {
                                                   double rotationalVelocity, double time, double dt) {
         Trajectory trajectory;
         double timeSinceStart;
-
+        
         synchronized (trajectoryLock) {
             // Return empty if no trajectory is being followed
             if (currentTrajectory == null) {

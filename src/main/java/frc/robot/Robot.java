@@ -23,14 +23,23 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystem.DisplayManager;
 import frc.robot.subsystem.PortMan;
 import frc.robot.subsystem.SubsystemFactory;
-import frc.robot.subsystem.commandgroups.ScoringAuton;
-import frc.robot.subsystem.commandgroups.SimpleAuton;
 import frc.robot.subsystem.controlpanel.ControlPanel;
 import frc.robot.util.OzoneLogger;
+
+//2910 auton stuff
+import frc.common.auton.AutonomousSelector;
+import frc.common.auton.AutonomousTrajectories;
+import frc.common.commands.FollowTrajectoryCommand;
+import frc.robot.subsystem.swerve.DrivetrainSubsystem2910;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Scheduler;
+
 
 import frc.robot.subsystem.SBInterface;
 import frc.robot.subsystem.controlpanel.ControlPanelSBTab;
 
+import java.time.Instant;
+import java.time.Duration;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,12 +54,16 @@ public class Robot extends TimedRobot {
   ControlPanel controlPanel;
   private static SubsystemFactory subsystemFactory;
 
+  private Instant initTime;
+  private Instant currentTime;
+
   private DisplayManager dManager;
-  private NetworkTableEntry simpleAuton;
   private ShuffleboardTab tab;
 
-  private Auton test;
-  private SequentialCommandGroup autonCommand;
+  private AutonomousTrajectories autonomousTrajectories = new AutonomousTrajectories(DrivetrainSubsystem2910.CONSTRAINTS);
+  private AutonomousSelector autonomousSelector = new AutonomousSelector(autonomousTrajectories);
+
+  private Command autonomousCommand = null;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -58,10 +71,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    initTime = Instant.now();
+
     subsystemFactory = SubsystemFactory.getInstance();
 
     tab = Shuffleboard.getTab("Auton");
-    simpleAuton = tab.add("Simple Auton", true).getEntry();
 
     OzoneLogger.getInstance().init(Level.ALL);
     logger.log(Level.INFO, "robot init");
@@ -69,7 +83,7 @@ public class Robot extends TimedRobot {
     dManager = new DisplayManager();
 
     try {
-      subsystemFactory.init(dManager, new PortMan());
+      subsystemFactory.init(dManager, PortMan.getInstance());
 
     } catch (Exception e) {
       StringWriter writer = new StringWriter();
@@ -90,8 +104,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-       CommandScheduler.getInstance().run();
-       dManager.update();
+      CommandScheduler.getInstance().run();
+      Scheduler.getInstance().run();
+      dManager.update();
+      // need to double check if default Drive command is being called too.
+      // this looks realy weird.
+      currentTime = Instant.now();
+      SubsystemFactory.getInstance().getDriveTrain().updateKinematics(Duration.between(initTime, currentTime).toMillis());
+       
   }
 
   /**
@@ -107,23 +127,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    CommandScheduler.getInstance().run();
-    test = new Auton(0.3);
-    test.initialize();
-
-    if(simpleAuton.getBoolean(true))
-      autonCommand = new SimpleAuton();
-    else{
-      
-      autonCommand = new ScoringAuton(
-        SubsystemFactory.getInstance().getTransport(), 
-        SubsystemFactory.getInstance().getIntake(),
-        SubsystemFactory.getInstance().getControlPanel(), 
-        SubsystemFactory.getInstance().getShooter());
-        
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
     }
 
-    CommandScheduler.getInstance().schedule(autonCommand);
+    autonomousCommand = autonomousSelector.getCommand();
+    autonomousCommand.start();
   }
 
   /**
@@ -132,6 +141,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     CommandScheduler.getInstance().run();
+    Scheduler.getInstance().run();
 
     //test.execute();
   }

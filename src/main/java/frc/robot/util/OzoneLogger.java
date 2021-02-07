@@ -16,7 +16,7 @@ public class OzoneLogger {
 	
 	private static OzoneLogger instance	= null;
 	private long startupTime = System.currentTimeMillis();
-	private Logger logger	= Logger.getLogger("frc.robot");
+	private static Logger logger	= Logger.getLogger("frc.robot");
 	private boolean	initted	= false;
 
 	private OzoneLogger() {
@@ -94,5 +94,10 @@ public class OzoneLogger {
 		
 		logger.finest("main finest");
 	}
-
+	public final static void logStackTrace() {
+		StackTraceElement[] stackTraces = Thread.currentThread().getStackTrace();
+		for (int i = 1; i < stackTraces.length; i++) {
+			logger.info(stackTraces[i].toString());
+		}
+	}
 }

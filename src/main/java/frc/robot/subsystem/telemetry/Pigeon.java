@@ -7,8 +7,9 @@ import frc.common.drivers.NavX.Axis;
 
 public final class Pigeon extends Gyroscope {
     private PigeonIMU pigeon;
+    private static Pigeon me;
 
-    public Pigeon(int canPort) {
+    private Pigeon(int canPort) {
         pigeon = new PigeonIMU(canPort);
     }
 
@@ -19,8 +20,8 @@ public final class Pigeon extends Gyroscope {
 
     @Override
     public Rotation2 getUnadjustedAngle() {
-        //return Rotation2.fromRadians(getAxis(Axis.YAW));
-        return Rotation2.ZERO;
+        return Rotation2.fromRadians(getAxis(Axis.YAW));
+        // return Rotation2.ZERO;
     }
 
     @Override
@@ -28,8 +29,8 @@ public final class Pigeon extends Gyroscope {
         double[] xyz = new double[3];
         pigeon.getRawGyro(xyz);
 
-        //return Math.toRadians(xyz[2]);
-        return 0.0;
+        return Math.toRadians(xyz[2]);
+        // return 0.0;
     }
 
     public double getAxis(Axis axis) {
@@ -46,5 +47,12 @@ public final class Pigeon extends Gyroscope {
             default:
                 return 0.0;
         }
+    }
+    public static Pigeon getInstance() {
+        if(me == null) {
+            me = new Pigeon(21);
+            me.calibrate();
+        }
+        return me;
     }
 }
