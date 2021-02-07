@@ -174,7 +174,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
                 Rotation2.fromDegrees(pigeon.getAxis(Axis.YAW))
         );
 
-        Optional<HolonomicDriveSignal> optSignal = follower.update(currentPose, getKinematicVelocity(), pigeon.getAngularVelocity(),
+        Optional<HolonomicDriveSignal> optSignal = follower.update(currentPose, getKinematicVelocity(), pigeon.getRate(),
                 timestamp, dt);
         HolonomicDriveSignal localSignal;
 

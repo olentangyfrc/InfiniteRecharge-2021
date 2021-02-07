@@ -48,11 +48,6 @@ public final class Pigeon extends Gyroscope {
                 return 0.0;
         }
     }
-    public double getAngularVelocity() {
-        double[] xyz_dps = new double[3];
-        pigeon.getRawGyro(xyz_dps);
-        return xyz_dps[1];
-    }
     public static Pigeon getInstance() {
         if(me == null) {
             me = new Pigeon(21);
