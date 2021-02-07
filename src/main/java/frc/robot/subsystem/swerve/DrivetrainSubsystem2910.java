@@ -21,10 +21,15 @@ import frc.common.util.HolonomicDriveSignal;
 import frc.common.util.HolonomicFeedforward;
 import frc.robot.subsystem.SubsystemFactory;
 import frc.robot.subsystem.telemetry.Pigeon;
-
+import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import frc.robot.subsystem.PortMan;
 
 public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     private static final double TRACKWIDTH = 23.5;
@@ -36,11 +41,24 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
     private Pigeon pigeon = Pigeon.getInstance();
 
+    private SwerveModule frontLeftModule;
+    private SwerveModule frontRightModule;
+    private SwerveModule backLeftModule;
+    private SwerveModule backRightModule;
+
+    private PortMan pm;
+
     public static final ITrajectoryConstraint[] CONSTRAINTS = {
             new MaxVelocityConstraint(MAX_VELOCITY),
             new MaxAccelerationConstraint(13.0 * 12.0),
             new CentripetalAccelerationConstraint(25.0 * 12.0)
     };
+    private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+            new Translation2d(TRACKWIDTH / 2.0, WHEELBASE / 2.0),
+            new Translation2d(TRACKWIDTH / 2.0, -WHEELBASE / 2.0),
+            new Translation2d(-TRACKWIDTH / 2.0, WHEELBASE / 2.0),
+            new Translation2d(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0)
+    );
     private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(2.6);
     private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(311.8);
     private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(120.2);
@@ -54,7 +72,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
     private static final PidConstants SNAP_ROTATION_CONSTANTS = new PidConstants(0.3, 0.01, 0.0);
 
-    private static final DrivetrainSubsystem2910 instance = new DrivetrainSubsystem2910();
+    private static DrivetrainSubsystem2910 instance;
 
     private SwerveModule[] swerveModules;
 
@@ -73,45 +91,47 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     private HolonomicDriveSignal signal = new HolonomicDriveSignal(Vector2.ZERO, 0.0, false);
     private Trajectory.Segment segment = null;
 
-    private DrivetrainSubsystem2910() {
+    private DrivetrainSubsystem2910() throws Exception {
+        pm = PortMan.getInstance();
+
         double frontLeftAngleOffset = FRONT_LEFT_ANGLE_OFFSET;
         double frontRightAngleOffset = FRONT_RIGHT_ANGLE_OFFSET;
         double backLeftAngleOffset = BACK_LEFT_ANGLE_OFFSET;
         double backRightAngleOffset = BACK_RIGHT_ANGLE_OFFSET;
 
-        SwerveModule frontLeftModule = new Mk2SwerveModuleBuilder(
+        frontLeftModule = new Mk2SwerveModuleBuilder(
             new Vector2(TRACKWIDTH / 2.0, WHEELBASE / 2.0))
-            .angleEncoder(new AnalogInput(0), FRONT_LEFT_ANGLE_OFFSET)
-            .angleMotor(new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .angleEncoder(new AnalogInput(pm.acquirePort(PortMan.analog0_label, "FL.Swerve.Encoder")), FRONT_LEFT_ANGLE_OFFSET)
+            .angleMotor(new CANSparkMax(pm.acquirePort(PortMan.can_09_label, "FL.Swerve.angle"), CANSparkMaxLowLevel.MotorType.kBrushless),
                     Mk2SwerveModuleBuilder.MotorType.NEO)
-            .driveMotor(new CANSparkMax(7, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .driveMotor(new CANSparkMax(pm.acquirePort(PortMan.can_07_label, "FL.Swerve.drive"), CANSparkMaxLowLevel.MotorType.kBrushless),
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
 
-        SwerveModule frontRightModule = new Mk2SwerveModuleBuilder(
+        frontRightModule = new Mk2SwerveModuleBuilder(
             new Vector2(TRACKWIDTH / 2.0, -WHEELBASE / 2.0))
-            .angleEncoder(new AnalogInput(1), FRONT_RIGHT_ANGLE_OFFSET)
-            .angleMotor(new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .angleEncoder(new AnalogInput(pm.acquirePort(PortMan.analog1_label, "FR.Swerve.Encoder")), FRONT_RIGHT_ANGLE_OFFSET)
+            .angleMotor(new CANSparkMax(pm.acquirePort(PortMan.can_03_label, "FR.Swerve.angle"), CANSparkMaxLowLevel.MotorType.kBrushless),
                     Mk2SwerveModuleBuilder.MotorType.NEO)
-            .driveMotor(new CANSparkMax(62, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .driveMotor(new CANSparkMax(pm.acquirePort(PortMan.can_62_label, "FR.Swerve.drive"), CANSparkMaxLowLevel.MotorType.kBrushless),
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
             
-        SwerveModule backLeftModule = new Mk2SwerveModuleBuilder(
+        backLeftModule = new Mk2SwerveModuleBuilder(
             new Vector2(-TRACKWIDTH / 2.0, WHEELBASE / 2.0))
-            .angleEncoder(new AnalogInput(2), BACK_LEFT_ANGLE_OFFSET)
-            .angleMotor(new CANSparkMax(61, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .angleEncoder(new AnalogInput(pm.acquirePort(PortMan.analog2_label, "BL.Swerve.Encoder")), BACK_LEFT_ANGLE_OFFSET)
+            .angleMotor(new CANSparkMax(pm.acquirePort(PortMan.can_61_label, "BL.Swerve.angle"), CANSparkMaxLowLevel.MotorType.kBrushless),
                     Mk2SwerveModuleBuilder.MotorType.NEO)
-            .driveMotor(new CANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .driveMotor(new CANSparkMax(pm.acquirePort(PortMan.can_11_label, "BL.Swerve.drive"), CANSparkMaxLowLevel.MotorType.kBrushless),
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
 
-        SwerveModule backRightModule = new Mk2SwerveModuleBuilder(
+        backRightModule = new Mk2SwerveModuleBuilder(
             new Vector2(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0))
-            .angleEncoder(new AnalogInput(3), BACK_RIGHT_ANGLE_OFFSET)
-            .angleMotor(new CANSparkMax(58, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .angleEncoder(new AnalogInput(pm.acquirePort(PortMan.analog3_label, "BR.Swerve.Encoder")), BACK_RIGHT_ANGLE_OFFSET)
+            .angleMotor(new CANSparkMax(pm.acquirePort(PortMan.can_58_label, "BR.Swerve.angle"), CANSparkMaxLowLevel.MotorType.kBrushless),
                     Mk2SwerveModuleBuilder.MotorType.NEO)
-            .driveMotor(new CANSparkMax(6, CANSparkMaxLowLevel.MotorType.kBrushless),
+            .driveMotor(new CANSparkMax(pm.acquirePort(PortMan.can_06_label, "BR.Swerve.drive"), CANSparkMaxLowLevel.MotorType.kBrushless),
                     Mk2SwerveModuleBuilder.MotorType.NEO)
             .build();
 
@@ -201,7 +221,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
                 snapRotation = Double.NaN;
             }
         }
-        super.holonomicDrive(localSignal.getTranslation(), localSignal.getRotation(), localSignal.isFieldOriented());
+        drive(new Translation2d(localSignal.getTranslation().x, localSignal.getTranslation().y), localSignal.getRotation(), localSignal.isFieldOriented());
         outputToSmartDashboard();
     }
 
@@ -238,6 +258,13 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     }
 
     public static DrivetrainSubsystem2910 getInstance() {
+        if(instance == null) {
+            try {
+                instance = new DrivetrainSubsystem2910();
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+        }
         return instance;
     }
 
@@ -245,7 +272,21 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     public SwerveModule[] getSwerveModules() {
         return swerveModules;
     }
-
+    public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
+        rotation *= 2.0 / Math.hypot(WHEELBASE, TRACKWIDTH);
+        ChassisSpeeds speeds;
+        if (fieldOriented) {
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
+                    Rotation2d.fromDegrees(pigeon.getAngle().toDegrees()));
+        } else {
+            speeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+        }
+        SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
+        frontLeftModule.setTargetVelocity(states[0].speedMetersPerSecond, states[0].angle.getRadians());
+        frontRightModule.setTargetVelocity(states[1].speedMetersPerSecond, states[1].angle.getRadians());
+        backLeftModule.setTargetVelocity(states[2].speedMetersPerSecond, states[2].angle.getRadians());
+        backRightModule.setTargetVelocity(states[3].speedMetersPerSecond, states[3].angle.getRadians());
+    }
     @Override
     public Pigeon getGyroscope() {
         return pigeon;

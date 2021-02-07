@@ -27,6 +27,8 @@ public class PortMan {
 
     private static Logger logger = Logger.getLogger(PortMan.class.getName());
     private static ShuffleboardTab tab = Shuffleboard.getTab("PortMan");
+
+    private static PortMan me;
     
 	private HashMap <String, String> allocatedPorts;
 
@@ -148,8 +150,14 @@ public class PortMan {
     public static final String can_61_label = "CAN61";
     public static final String can_62_label = "CAN62";
 
-    public PortMan() {
+    private PortMan() {
         allocatedPorts  = new HashMap<String, String> ();
+    }
+    public static PortMan getInstance() {
+        if(me == null) {
+            me = new PortMan();
+        }
+        return me;
     }
 
     public int acquirePort(String label, String requestedDevice) throws OzoneException {

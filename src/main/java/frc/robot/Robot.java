@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
     dManager = new DisplayManager();
 
     try {
-      subsystemFactory.init(dManager, new PortMan());
+      subsystemFactory.init(dManager, PortMan.getInstance());
 
     } catch (Exception e) {
       StringWriter writer = new StringWriter();
