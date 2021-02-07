@@ -21,6 +21,9 @@ import frc.common.math.Vector2;
 import frc.common.drivers.Mk2SwerveModuleBuilder;
 import frc.robot.util.OzoneLogger;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 public class DrivetrainSubsystem extends SubsystemBase {
     private static final double TRACKWIDTH = 23.5;
     private static final double WHEELBASE = 23.5;
@@ -29,6 +32,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(311.0);
     private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(119.4);
     private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(171.8);
+
+    static Logger logger = Logger.getLogger(DrivetrainSubsystem.class.getName());
 
     /*
     private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(0.0);
@@ -138,7 +143,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         } else {
             speeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
         }
-
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
         frontLeftModule.setTargetVelocity(states[0].speedMetersPerSecond, states[0].angle.getRadians());
         frontRightModule.setTargetVelocity(states[1].speedMetersPerSecond, states[1].angle.getRadians());
