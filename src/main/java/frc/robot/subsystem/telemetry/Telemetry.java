@@ -21,9 +21,18 @@ public class Telemetry extends SubsystemBase{
     
     private LidarPWM frontLidar, rearLidar, backLidar;
     private double frontLidarDistance, rearLidarDistance, backLidarDistance;
+    
+    /*
     private double frontLidarOffset = 0;
     private double rearLidarOffset = 0;
     private double backLidarOffset = 0;
+    */
+
+    // "calibration" of lidars (based on margin of error)
+    private double frontCalibration;
+    private double rearCalibration;
+    private double frontShort, frontMed;   //front ranges 
+    private double rearShort, rearMed;   //rear ranges
 
     private static Logger logger = Logger.getLogger(Telemetry.class.getName());
 
@@ -119,17 +128,49 @@ public class Telemetry extends SubsystemBase{
         }
     }
     
+    private void setFrontCal(){
+        //returns value to be added to front lidar's calculated distance
+        if(filterFront.calculate(frontLidar.getDistance()) <= frontShort){
+            frontCalibration = -10.0;
+        } 
+        else if(filterFront.calculate(frontLidar.getDistance()) <= frontMed){
+            frontCalibration = -9.0;
+        } 
+        else if(filterFront.calculate(frontLidar.getDistance()) > frontMed){
+            frontCalibration = -8.0;
+        }
+        else{
+            frontCalibration = -10000; //if all of those are false, something must be wrong, so this will let us know
+        }
+
+    }
+
+    private void setRearCal(){
+        //returns value to be added to rear lidar's calculated distance
+        if(filterRear.calculate(rearLidar.getDistance()) <= rearShort){
+            rearCalibration = -10.0;
+        }
+        else if(filterRear.calculate(rearLidar.getDistance()) <= rearMed){
+            rearCalibration = -9.0;
+        }
+        else if(filterRear.calculate(rearLidar.getDistance()) > rearMed){
+            rearCalibration = -8.0;
+        }
+        else{
+            rearCalibration = -10000; //if all of those are false, something must be wrong, so this will let us know
+        }
+    }
 
     public double getFrontLidarDistance(){
         if (frontLidar == null)
             return 0.0;
-        return Math.round(filterFront.calculate(frontLidar.getDistance())) * 1.0;
+        return Math.round(filterFront.calculate(frontLidar.getDistance())) * 1.0; // + frontCalibration
     }
 
     public double getRearLidarDistance(){
         if (rearLidar == null)
             return 0.0;
-        return Math.round(filterRear.calculate(rearLidar.getDistance())) * 1.0;
+        return Math.round(filterRear.calculate(rearLidar.getDistance())) * 1.0; // + rearCalibration
     }
 
     public double getBackLidarDistance(){
