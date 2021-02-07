@@ -13,10 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     private Vector2 kinematicPosition = Vector2.ZERO;
     private Vector2 kinematicVelocity = Vector2.ZERO;
     private double lastKinematicTimestamp;
+
+    static Logger logger = Logger.getLogger(SwerveDrivetrain.class.getName());
 
     private InterpolatingTreeMap<InterpolatingDouble, Vector2> positionSamples = new InterpolatingTreeMap<>(5);
 
@@ -27,7 +32,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
         for (SwerveModule module : getSwerveModules()) {
             Vector2 velocity = module.getModulePosition().normal().scale(rotation).add(translation);
-
+            
             module.setTargetVelocity(velocity);
         }
     }

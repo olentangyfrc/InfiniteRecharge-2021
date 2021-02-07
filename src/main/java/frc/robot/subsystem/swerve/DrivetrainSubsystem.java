@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.common.drivers.SwerveModule;
 import frc.common.math.Vector2;
 import frc.common.drivers.Mk2SwerveModuleBuilder;
+import frc.robot.util.OzoneLogger;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private static final double TRACKWIDTH = 23.5;
@@ -120,7 +121,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getCurrentAngle()));
         SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getCurrentAngle()));
         SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getCurrentAngle()));
-
         SmartDashboard.putNumber("Gyroscope Angle", pigeon.getAngle().toDegrees());
 
         frontLeftModule.updateState(TimedRobot.kDefaultPeriod);

@@ -24,8 +24,8 @@ public class HolonomicDriveCommand extends Command {
         double rotation = - OI.getInstance().getRightJoystickXValue();
 
         Vector2 translation = new Vector2(forward, strafe);
-        String output = String.format("Forward[%f], Strafe[%f], Rotation[%f], Gyro[%f]", forward, strafe, rotation, DrivetrainSubsystem2910.getInstance().getGyroscope().getAxis(Axis.YAW));
-        logger.log(Level.INFO, output);
+        //String output = String.format("Forward[%f], Strafe[%f], Rotation[%f], Gyro[%f]", forward, strafe, rotation, DrivetrainSubsystem2910.getInstance().getGyroscope().getAxis(Axis.YAW));
+        //logger.log(Level.INFO, output);
         DrivetrainSubsystem2910.getInstance().holonomicDrive(translation, rotation, true);
     }
 

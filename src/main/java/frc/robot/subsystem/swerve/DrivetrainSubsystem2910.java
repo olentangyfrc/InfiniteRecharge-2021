@@ -201,7 +201,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
                 snapRotation = Double.NaN;
             }
         }
-
         super.holonomicDrive(localSignal.getTranslation(), localSignal.getRotation(), localSignal.isFieldOriented());
         outputToSmartDashboard();
     }
@@ -264,7 +263,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
     @Override
     protected void initDefaultCommand() {
-        logger.log(Level.INFO, "drivetrain initdefaultcommand");
         setDefaultCommand(new HolonomicDriveCommand());
     }
 
