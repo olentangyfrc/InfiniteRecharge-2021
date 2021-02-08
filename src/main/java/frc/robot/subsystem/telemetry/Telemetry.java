@@ -8,26 +8,49 @@
 
 package frc.robot.subsystem.telemetry;
 
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.MedianFilter;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystem.PortMan;
 import java.util.logging.Logger;
 
+import javax.lang.model.util.ElementScanner6;
+
 public class Telemetry extends SubsystemBase{
     
-    private LidarPWM frontLidar, rearLidar;
-    private double frontLidarDistance, rearLidarDistance;
+    private LidarPWM frontLidar, rearLidar, backLidar;
+    private double frontLidarDistance, rearLidarDistance, backLidarDistance;
+    
+    /*
     private double frontLidarOffset = 0;
     private double rearLidarOffset = 0;
+    private double backLidarOffset = 0;
+    */
+
+    // "calibration" of lidars (based on margin of error)
+    private double frontCalibration;
+    private double rearCalibration;
+    private double frontShort, frontMed;   //front ranges 
+    private double rearShort, rearMed;   //rear ranges
 
     private static Logger logger = Logger.getLogger(Telemetry.class.getName());
 
     private double betweenLidarDistance = 0;
-    private double lidarTolerance = 5;
+    private double lidarTolerance = 1.0;
     private double correction = Math.PI/180;
     private MedianFilter filterFront;
     private MedianFilter filterRear;
+    private MedianFilter filterBack;
+
+    private int horDirection = 0;
+    private int verticalDirection = 0;
+    private double rotationalSpeed = 0.1;
+    private double translationalSpeed = 0.1;
+
+    //targetDistance is the distance away from the wall
+    private double horizontalTargetDistance = 100;
+    private double verticalTargetDistance = 100;
 
     public Telemetry() {
     }
@@ -35,10 +58,12 @@ public class Telemetry extends SubsystemBase{
     public void init(PortMan portMan) throws Exception{
         logger.entering(Telemetry.class.getName(), "init()");
 
-        //frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital4_label, "Telemetry.frontLidar"));
-        rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital1_label, "Telemetry.rearLidar"));
+        frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital1_label, "Telemetry.frontLidar"));
+        rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital7_label, "Telemetry.rearLidar"));
+        backLidar = new LidarPWM(portMan.acquirePort(PortMan.digital6_label, "Telemetry.backLidar"));
         filterFront = new MedianFilter(10);
         filterRear = new MedianFilter(10);
+        filterBack = new MedianFilter(10);
 
         CameraServer.getInstance().startAutomaticCapture();
         //CameraServer.getInstance().startAutomaticCapture();
@@ -52,103 +77,108 @@ public class Telemetry extends SubsystemBase{
         else
             return false;
     }
-    
-    /*
-    //breaks lidar on shuffleboard
-    public boolean isSquare(double targetDistance)
+
+    public int whereAmI(){
     {
-        frontLidarDistance = frontLidar.getDistance();
-        rearLidarDistance = rearLidar.getDistance();
-
-        if (Math.abs(frontLidarDistance-targetDistance) > lidarTolerance || Math.abs(rearLidarDistance-targetDistance) > lidarTolerance || Math.abs(frontLidarDistance-rearLidarDistance) > lidarTolerance)
-        {
-            double angleError = Math.atan((Math.max(frontLidarDistance, rearLidarDistance)-Math.min(frontLidarDistance, rearLidarDistance))/betweenLidarDistance);
-
-            if (frontLidarDistance*Math.cos(angleError)-targetDistance > rearLidarDistance*Math.cos(angleError)-targetDistance)
-            {
-                if (frontLidarDistance < rearLidarDistance)
-                {
-                    //move front wheels right angleError, turn right
-                }
-                else
-                {
-                    //move front wheels left angleError, turn left
-                }
+        //multiplies speed by the value that is returned to set direction of rotation
+        frontLidarDistance = Math.round(frontLidar.getDistance()) * 1.0;
+        rearLidarDistance = Math.round(rearLidar.getDistance()) * 1.0;
+            if (frontLidarDistance > rearLidarDistance && !isSquare(lidarTolerance)){
+                //rotate left
+                return 1;
+            } else if(frontLidarDistance < rearLidarDistance && !isSquare(lidarTolerance)){
+                //rotate right
+                return -1;
+            } else {
+                //already square
+                return 0;
             }
-            else
-            {
-                if (frontLidarDistance < rearLidarDistance)
-                {
-                    //move back wheels left angleError, turn right
-                }
-                else
-                {
-                    //move back wheels right angleError, turn left
-                }
-            }
-
-            while(Math.abs(frontLidarDistance-rearLidarDistance) > lidarTolerance)
-            {
-                if (frontLidarDistance*Math.cos(angleError)-targetDistance > rearLidarDistance*Math.cos(angleError)-targetDistance)
-                {
-                    if (frontLidarDistance < rearLidarDistance)
-                    {
-                        //move front wheels right correction, turn right
-                    }
-                    else
-                    {
-                        //move front wheels left correction, turn left
-                    }
-                
-                }
-                else
-                {
-                    if (frontLidarDistance < rearLidarDistance)
-                    {
-                        //move back wheels left correction, turn right
-                    }
-                    else
-                    {
-                        //move back wheels right correction, turn left
-                    }
-                }
-            }
-            
-            double distanceError = Math.abs(frontLidarDistance - targetDistance);
-
-            if (distanceError > lidarTolerance)
-            {
-                if (frontLidarDistance > targetDistance)
-                {
-                    //move left distanceError
-                }
-                else
-                {
-                    //move right distanceError
-                }
-            }
-        }
-        return true;
+        }     
     }
-    */
+
+    public int directionToGo(){
+        frontLidarDistance = Math.round(frontLidar.getDistance()) * 1.0;
+        if(Math.abs(frontLidarDistance - horizontalTargetDistance) < lidarTolerance){
+            //already at target
+            return 0;
+        }
+        else if(frontLidarDistance - horizontalTargetDistance > 0){
+            //go left
+            return 1;
+        }
+        else{
+            //go right
+            return -1;
+        }
+    }
+
+    public int verticalDirectionToGo(){
+        backLidarDistance = Math.round(backLidar.getDistance()) * 1.0;
+        if(Math.abs(backLidarDistance - verticalTargetDistance) < lidarTolerance){
+            //already at target
+            return 0;
+        }
+        else if(backLidarDistance - verticalTargetDistance > 0){
+            //go back
+            return -1;
+        }
+        else{
+            //go forward
+            return 1;
+        }
+    }
+    
+    private void setFrontCal(){
+        //returns value to be added to front lidar's calculated distance
+        if(filterFront.calculate(frontLidar.getDistance()) <= frontShort){
+            frontCalibration = -10.0;
+        } 
+        else if(filterFront.calculate(frontLidar.getDistance()) <= frontMed){
+            frontCalibration = -9.0;
+        } 
+        else if(filterFront.calculate(frontLidar.getDistance()) > frontMed){
+            frontCalibration = -8.0;
+        }
+        else{
+            frontCalibration = -10000; //if all of those are false, something must be wrong, so this will let us know
+        }
+
+    }
+
+    private void setRearCal(){
+        //returns value to be added to rear lidar's calculated distance
+        if(filterRear.calculate(rearLidar.getDistance()) <= rearShort){
+            rearCalibration = -10.0;
+        }
+        else if(filterRear.calculate(rearLidar.getDistance()) <= rearMed){
+            rearCalibration = -9.0;
+        }
+        else if(filterRear.calculate(rearLidar.getDistance()) > rearMed){
+            rearCalibration = -8.0;
+        }
+        else{
+            rearCalibration = -10000; //if all of those are false, something must be wrong, so this will let us know
+        }
+    }
 
     public double getFrontLidarDistance(){
         if (frontLidar == null)
             return 0.0;
-        return filterFront.calculate(frontLidar.getDistance() - 10);
+        return Math.round(filterFront.calculate(frontLidar.getDistance())) * 1.0; // + frontCalibration
     }
 
     public double getRearLidarDistance(){
         if (rearLidar == null)
             return 0.0;
-            
-        return filterRear.calculate(rearLidar.getDistance());
+        return Math.round(filterRear.calculate(rearLidar.getDistance())) * 1.0; // + rearCalibration
     }
 
-    public boolean isSquare()
-    {
-        return isSquare(100);
+    public double getBackLidarDistance(){
+        if(backLidar == null)
+            return 0.0;
+        return Math.round(filterBack.calculate(backLidar.getDistance())) * 1.0;
     }
+
     
     public double getTolerance(){
         return lidarTolerance;
@@ -160,5 +190,44 @@ public class Telemetry extends SubsystemBase{
 
     public double getBetweenLidar(){
         return betweenLidarDistance;
+    }
+
+    public void setHorDirection(int dir){
+        horDirection = dir;
+    }
+
+    public void setHorizontalTargetDistance(double dis)
+    {
+        horizontalTargetDistance = dis;
+    }
+
+    public void setVerticalTargetDistance(double dist)
+    {
+        verticalTargetDistance = dist;
+    }
+
+    public void setVerticalDirection(int dire)
+    {
+        verticalDirection = dire;
+    }
+
+    public void setRotationalSpeed(double sp)
+    {
+        rotationalSpeed = sp;
+    }
+
+    public double getRotationalSpeed()
+    {
+        return rotationalSpeed;
+    }
+
+    public void setTranslationalSpeed(double speed)
+    {
+        translationalSpeed = speed;
+    }
+
+    public double getTranslationalSpeed()
+    {
+        return translationalSpeed;
     }
 }
