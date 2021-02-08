@@ -120,15 +120,15 @@ public final class Rotation2 implements Interpolable<Rotation2>, Serializable {
     /**
      * Rotate this rotation by another by adding the effects together.
      *
-     * @param other How much to rotate this rotation by.
+     * @param startingOrientation How much to rotate this rotation by.
      * @return The rotation rotated by the other rotation.
      */
-    public Rotation2 rotateBy(Rotation2 other) {
+    public Rotation2 rotateBy(Rotation2 startingOrientation) {
         // This is implemented as a rotation matrix. The rotation "this" is rotated by a rotation matrix created by the
         // rotation "other".
         // See https://en.wikipedia.org/wiki/Rotation_matrix for more information on rotation matrices.
-        return new Rotation2(cos * other.cos - sin * other.sin,
-                cos * other.sin + sin * other.cos, true);
+        return new Rotation2(cos * startingOrientation.cos - sin * startingOrientation.sin,
+                cos * startingOrientation.sin + sin * startingOrientation.cos, true);
     }
 
     /**

@@ -19,6 +19,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.common.drivers.SwerveModule;
 import frc.common.math.Vector2;
 import frc.common.drivers.Mk2SwerveModuleBuilder;
+import frc.robot.util.OzoneLogger;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     private static final double TRACKWIDTH = 23.5;
@@ -29,13 +33,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(311.0);
     private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(119.4);
     private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(171.8);
-*/
+    */
     
     private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(2.6);
     private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(311.8);
     private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(120.2);
     private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(259.2);
-    
+
+    static Logger logger = Logger.getLogger(DrivetrainSubsystem.class.getName());
+
+    /*
+    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(0.0);
+    private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(0.0);
+    private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(0.0);
+    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(0.0);
+    */
 
     private SwerveModule frontLeftModule ;
     private SwerveModule frontRightModule ;
@@ -58,7 +70,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void init(PortMan portMan) throws Exception {
 
         //private final Gyroscope gyroscope = new NavX(SPI.Port.kMXP);
-        pigeon      = new Pigeon(21);
+        pigeon = Pigeon.getInstance();
 
         pigeon.calibrate();
         pigeon.setInverted(true); // You might not need to invert the gyro
@@ -121,7 +133,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Front Right Module Angle", Math.toDegrees(frontRightModule.getCurrentAngle()));
         SmartDashboard.putNumber("Back Left Module Angle", Math.toDegrees(backLeftModule.getCurrentAngle()));
         SmartDashboard.putNumber("Back Right Module Angle", Math.toDegrees(backRightModule.getCurrentAngle()));
-
         SmartDashboard.putNumber("Gyroscope Angle", pigeon.getAngle().toDegrees());
 
         frontLeftModule.updateState(TimedRobot.kDefaultPeriod);
@@ -139,7 +150,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         } else {
             speeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
         }
-
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
         frontLeftModule.setTargetVelocity(states[0].speedMetersPerSecond, states[0].angle.getRadians());
         frontRightModule.setTargetVelocity(states[1].speedMetersPerSecond, states[1].angle.getRadians());

@@ -27,10 +27,8 @@ import frc.robot.subsystem.intake.commands.IntakeSpinForward;
 import frc.robot.subsystem.intake.commands.IntakeStop;
 import frc.robot.subsystem.intake.commands.IntakeUp;
 import frc.robot.subsystem.telemetry.Telemetry;
-import frc.robot.subsystem.telemetry.commands.SquareSelf;
-import frc.robot.subsystem.telemetry.commands.GoToHorizontalDistance;
-import frc.robot.subsystem.telemetry.commands.GoToVerticalDistance;
 import frc.robot.subsystem.telemetry.Pigeon;
+import frc.robot.subsystem.telemetry.commands.SquareSelf;
 import frc.robot.subsystem.onewheelshooter.OneWheelShooter;
 import frc.robot.subsystem.winch.Winch;
 import frc.robot.subsystem.winch.commands.WinchUp;
@@ -60,7 +58,7 @@ import frc.robot.subsystem.transport.Transport;
 import frc.robot.subsystem.transport.commands.*;
 import frc.robot.subsystem.transport.commands.TakeIn;
 import frc.robot.subsystem.transport.commands.StopTransport;
-import frc.robot.subsystem.swerve.DrivetrainSubsystem2910;
+import frc.robot.subsystem.swerve.DrivetrainSubsystem;
 
 public class SubsystemFactory {
 
@@ -82,7 +80,7 @@ public class SubsystemFactory {
     private OneWheelShooter oneWheelShooter;
     private Telemetry telemetry;
     private PixyLineCam pixyLineCam;
-    private DrivetrainSubsystem2910 driveTrain;
+    private DrivetrainSubsystem driveTrain;
     private Intake intake;
     private Winch winch;
     private Pigeon pigeon;
@@ -113,20 +111,22 @@ public class SubsystemFactory {
     }
 
 
-    private void initComp(PortMan portMan) throws Exception {
+    private void initComp(PortMan portMan ) throws Exception {
 
         logger.info("initiatizing");
 
-        driveTrain = DrivetrainSubsystem2910.getInstance();
-        /*
+        
         WinchUp w = new WinchUp(winch);
         OI.getInstance().bind(w, OI.RightButtonBox4, OI.WhileHeld);
         OI.getInstance().bind(w, OI.RightJoyButton11, OI.WhileHeld);
-        */
+        
+        driveTrain  = new DrivetrainSubsystem();
+        driveTrain.init(portMan);
 
-        pigeon = driveTrain.getGyroscope();
+        pigeon = new Pigeon(21);
         pigeon.calibrate();
         pigeon.setInverted(true);
+
 
         /**
          * All of the OneWheelShooter stuff goes here
@@ -259,15 +259,6 @@ public class SubsystemFactory {
         telemetry.init(portMan);
         displayManager.addTelemetry(telemetry);
 
-        SquareSelf ccc = new SquareSelf(telemetry, 2.34);
-        OI.getInstance().bind(ccc, OI.LeftJoyButton6, OI.WhenPressed);
-
-        GoToHorizontalDistance ccd= new GoToHorizontalDistance(telemetry, 2.34);
-        OI.getInstance().bind(ccd, OI.LeftJoyButton7, OI.WhenPressed);
-
-        GoToVerticalDistance cce = new GoToVerticalDistance(telemetry, 2.34);
-        OI.getInstance().bind(cce, OI.LeftJoyButton10, OI.WhenPressed);
-
         //Command Groups
         /*
         CollectionMode collectionMode = new CollectionMode(transport, intake, controlPanel, oneWheelShooter);
@@ -299,7 +290,7 @@ public class SubsystemFactory {
     public ControlPanel getControlPanel() {
         return controlPanel;
     }
-    public DrivetrainSubsystem2910 getDriveTrain(){
+    public DrivetrainSubsystem getDriveTrain(){
         return driveTrain;
     }
     public Climber getClimber() {
@@ -315,7 +306,50 @@ public class SubsystemFactory {
     public OneWheelShooter getShooter(){
         return oneWheelShooter;
     }
-    public Pigeon getGyro() {
+    public Gyroscope getGyro() {
         return pigeon;
     }
+
+    private String getBotName() throws Exception {
+
+        Enumeration<NetworkInterface> networks;
+            networks = NetworkInterface.getNetworkInterfaces();
+
+            String activeMACs = "";
+            for (NetworkInterface net : Collections.list(networks)) {
+                String mac = formatMACAddress(net.getHardwareAddress());
+                activeMACs += (mac+" ");
+                logger.info("Network #"+net.getIndex()+" "+net.getName()+" "+mac);
+                if (allMACs.containsKey(mac)) {
+                    botName = allMACs.get(mac);
+                    logger.info("   this MAC is for "+botName);
+                }
+            }
+
+            return botName;
+        }
+
+    /**
+     * Formats the byte array representing the mac address as more human-readable form
+     * @param hardwareAddress byte array
+     * @return string of hex bytes separated by colons
+     */
+    private String formatMACAddress(byte[] hardwareAddress) {
+        if (hardwareAddress == null || hardwareAddress.length == 0) {
+            return "";
+        }
+        StringBuilder mac = new StringBuilder(); // StringBuilder is a premature optimization here, but done as best practice
+        for (int k=0;k<hardwareAddress.length;k++) {
+            int i = hardwareAddress[k] & 0xFF;  // unsigned integer from byte
+            String hex = Integer.toString(i,16);
+            if (hex.length() == 1) {  // we want to make all bytes two hex digits 
+                hex = "0"+hex;
+            }
+            mac.append(hex.toUpperCase());
+            mac.append(":");
+        }
+        mac.setLength(mac.length()-1);  // trim off the trailing colon
+        return mac.toString();
+    }
+
 }

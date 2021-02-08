@@ -3,7 +3,14 @@ package frc.common.drivers;
 import frc.common.math.Rotation2;
 import frc.common.math.Vector2;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import frc.robot.OI;
+
+
 public abstract class SwerveModule {
+    static Logger logger = Logger.getLogger(SwerveModule.class.getName());
+
     private final Vector2 modulePosition;
 
     private final Object sensorMutex = new Object();
@@ -261,7 +268,8 @@ public abstract class SwerveModule {
         if (targetAngle < 0.0) {
             targetAngle += 2.0 * Math.PI;
         }
-
+        if(targetAngle != 0 || targetSpeed != 0) {
+        }
         setTargetAngle(targetAngle);
         setDriveOutput(targetSpeed);
     }

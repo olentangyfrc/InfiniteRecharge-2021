@@ -8,15 +8,21 @@ import frc.common.math.Rotation2;
 import frc.common.math.Vector2;
 import frc.common.util.InterpolatingDouble;
 import frc.common.util.InterpolatingTreeMap;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     private Vector2 kinematicPosition = Vector2.ZERO;
     private Vector2 kinematicVelocity = Vector2.ZERO;
     private double lastKinematicTimestamp;
+
+    static Logger logger = Logger.getLogger(SwerveDrivetrain.class.getName());
 
     private InterpolatingTreeMap<InterpolatingDouble, Vector2> positionSamples = new InterpolatingTreeMap<>(5);
 
@@ -27,10 +33,11 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
         for (SwerveModule module : getSwerveModules()) {
             Vector2 velocity = module.getModulePosition().normal().scale(rotation).add(translation);
-
+            
             module.setTargetVelocity(velocity);
         }
     }
+
 
     public abstract SwerveModule[] getSwerveModules();
 
@@ -83,13 +90,13 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
         resetKinematics(Vector2.ZERO, timestamp);
     }
 
-    public synchronized void resetKinematics(Vector2 position, double timestamp) {
+    public synchronized void resetKinematics(Vector2 zero, double timestamp) {
         for (SwerveModule module : getSwerveModules()) {
-            module.resetKinematics(position.add(module.getModulePosition()));
+            module.resetKinematics(zero.add(module.getModulePosition()));
         }
 
         kinematicVelocity = Vector2.ZERO;
-        kinematicPosition = position;
+        kinematicPosition = zero;
         lastKinematicTimestamp = timestamp;
     }
 

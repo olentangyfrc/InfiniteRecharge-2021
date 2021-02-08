@@ -10,16 +10,22 @@ import edu.wpi.first.wpilibj.Spark;
 import frc.common.control.PidConstants;
 import frc.common.control.PidController;
 
+
 import frc.common.drivers.SwerveModule;
 import frc.common.math.Vector2;
 
 import java.util.concurrent.atomic.AtomicLong;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class Mk2SwerveModule extends SwerveModule {
     private static final PidConstants ANGLE_CONSTANTS = new PidConstants(0.5, 0.0, 0.0001);
     private static final double DRIVE_TICKS_PER_INCH = 1.0 / (4.0 * Math.PI / 60.0 * 15.0 / 20.0 * 24.0 / 38.0 * 18.0); // 0.707947
 
     private static final double CAN_UPDATE_RATE = 200.0;
+
+    static Logger logger = Logger.getLogger(Mk2SwerveModule.class.getName());
 
     private final double angleOffset;
 
@@ -143,7 +149,7 @@ public class Mk2SwerveModule extends SwerveModule {
     @Override
     public void updateState(double dt) {
         super.updateState(dt);
-
+        //logger.log(Level.INFO, "updateState");
         angleMotor.set(angleController.calculate(getCurrentAngle(), dt));
     }
 }
