@@ -116,6 +116,7 @@ public class SubsystemFactory {
         logger.info("initiatizing");
 
         driveTrain = DrivetrainSubsystem2910.getInstance();
+        driveTrain.init(portMan);
         /*
         WinchUp w = new WinchUp(winch);
         OI.getInstance().bind(w, OI.RightButtonBox4, OI.WhileHeld);

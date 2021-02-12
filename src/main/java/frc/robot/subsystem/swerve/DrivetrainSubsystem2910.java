@@ -91,13 +91,15 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     private HolonomicDriveSignal signal = new HolonomicDriveSignal(Vector2.ZERO, 0.0, false);
     private Trajectory.Segment segment = null;
 
-    private DrivetrainSubsystem2910() throws Exception {
-        pm = PortMan.getInstance();
-
+    private DrivetrainSubsystem2910(){
+    }
+    public void init(PortMan pm) throws Exception{
         double frontLeftAngleOffset = FRONT_LEFT_ANGLE_OFFSET;
         double frontRightAngleOffset = FRONT_RIGHT_ANGLE_OFFSET;
         double backLeftAngleOffset = BACK_LEFT_ANGLE_OFFSET;
         double backRightAngleOffset = BACK_RIGHT_ANGLE_OFFSET;
+
+        this.pm = pm;
 
         frontLeftModule = new Mk2SwerveModuleBuilder(
             new Vector2(TRACKWIDTH / 2.0, WHEELBASE / 2.0))
