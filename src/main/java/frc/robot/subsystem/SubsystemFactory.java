@@ -115,6 +115,10 @@ public class SubsystemFactory {
 
         logger.info("initiatizing");
 
+        telemetry = new Telemetry();
+        telemetry.init(portMan);
+        displayManager.addTelemetry(telemetry);
+        
         driveTrain = DrivetrainSubsystem2910.getInstance();
         driveTrain.init(portMan);
         /*
@@ -122,10 +126,6 @@ public class SubsystemFactory {
         OI.getInstance().bind(w, OI.RightButtonBox4, OI.WhileHeld);
         OI.getInstance().bind(w, OI.RightJoyButton11, OI.WhileHeld);
         */
-
-        pigeon = driveTrain.getGyroscope();
-        pigeon.calibrate();
-        pigeon.setInverted(true);
 
         /**
          * All of the OneWheelShooter stuff goes here
@@ -254,9 +254,6 @@ public class SubsystemFactory {
          * All of the Telemery Stuff goes here
          */
 
-        telemetry = new Telemetry();
-        telemetry.init(portMan);
-        displayManager.addTelemetry(telemetry);
 
         //Command Groups
         /*
@@ -305,7 +302,7 @@ public class SubsystemFactory {
     public OneWheelShooter getShooter(){
         return oneWheelShooter;
     }
-    public Pigeon getGyro() {
-        return pigeon;
+    public Telemetry getTelemetry() {
+        return telemetry;
     }
 }

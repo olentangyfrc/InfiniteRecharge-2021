@@ -25,6 +25,8 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import frc.robot.subsystem.SubsystemFactory;
+
 public class AutonomousSelector {
     private final AutonomousTrajectories trajectories;
 
@@ -120,8 +122,8 @@ public class AutonomousSelector {
 
         // Set the gyro angle to the correct starting angle
         group.addSequential(new InstantCommand(() -> {
-            DrivetrainSubsystem2910.getInstance().getGyroscope().setAdjustmentAngle(
-                    DrivetrainSubsystem2910.getInstance().getGyroscope().getUnadjustedAngle().rotateBy(startingOrientation)
+            SubsystemFactory.getInstance().getTelemetry().getGyroscope().setAdjustmentAngle(
+                    SubsystemFactory.getInstance().getTelemetry().getGyroscope().getUnadjustedAngle().rotateBy(startingOrientation)
             );
     }));
 

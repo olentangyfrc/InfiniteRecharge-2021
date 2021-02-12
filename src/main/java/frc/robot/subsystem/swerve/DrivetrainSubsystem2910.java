@@ -29,7 +29,9 @@ import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import frc.robot.subsystem.PortMan;
+import frc.robot.subsystem.SubsystemFactory;
 
 public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     private static final double TRACKWIDTH = 23.5;
@@ -38,8 +40,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     private static final double MAX_VELOCITY = 12.0 * 12.0;
 
     static Logger logger = Logger.getLogger(DrivetrainSubsystem2910.class.getName());
-
-    private Pigeon pigeon = Pigeon.getInstance();
 
     private SwerveModule frontLeftModule;
     private SwerveModule frontRightModule;
@@ -193,10 +193,10 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         }
         RigidTransform2 currentPose = new RigidTransform2(
                 getKinematicPosition(),
-                Rotation2.fromDegrees(pigeon.getAxis(Axis.YAW))
+                Rotation2.fromDegrees(SubsystemFactory.getInstance().getTelemetry().getGyroscope().getAxis(Axis.YAW))
         );
 
-        Optional<HolonomicDriveSignal> optSignal = follower.update(currentPose, getKinematicVelocity(), pigeon.getRate(),
+        Optional<HolonomicDriveSignal> optSignal = follower.update(currentPose, getKinematicVelocity(), SubsystemFactory.getInstance().getTelemetry().getGyroscope().getRate(),
                 timestamp, dt);
         HolonomicDriveSignal localSignal;
 
@@ -216,7 +216,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
             snapRotationController.setSetpoint(localSnapRotation);
 
             localSignal = new HolonomicDriveSignal(localSignal.getTranslation(),
-                    snapRotationController.calculate(getGyroscope().getAngle().toRadians(), dt),
+                    snapRotationController.calculate(SubsystemFactory.getInstance().getTelemetry().getGyroscope().getAngle().toRadians(), dt),
                     localSignal.isFieldOriented());
         } else {
             synchronized (lock) {
@@ -238,7 +238,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
             localSegment = segment;
         }
 
-        SmartDashboard.putNumber("Gyro Angle", pigeon.getAxis(Axis.YAW));
+        SmartDashboard.putNumber("Gyro Angle", SubsystemFactory.getInstance().getTelemetry().getGyroscope().getAxis(Axis.YAW));
         SmartDashboard.putNumber("Drivetrain Follower Forwards", localSignal.getTranslation().x);
         SmartDashboard.putNumber("Drivetrain Follower Strafe", localSignal.getTranslation().y);
         SmartDashboard.putNumber("Drivetrain Follower Rotation", localSignal.getRotation());
@@ -251,7 +251,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
             SmartDashboard.putNumber("Drivetrain Follower X Error", localSegment.translation.x - position.x);
             SmartDashboard.putNumber("Drivetrain Follower Y Error", localSegment.translation.y - position.y);
-            SmartDashboard.putNumber("Drivetrain Follower Angle Error", localSegment.rotation.toDegrees() - getGyroscope().getAngle().toDegrees());
+            SmartDashboard.putNumber("Drivetrain Follower Angle Error", localSegment.rotation.toDegrees() - SubsystemFactory.getInstance().getTelemetry().getGyroscope().getAngle().toDegrees());
         }
 
         for (SwerveModule module : swerveModules) {
@@ -279,7 +279,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         ChassisSpeeds speeds;
         if (fieldOriented) {
             speeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
-                    Rotation2d.fromDegrees(pigeon.getAngle().toDegrees()));
+                    Rotation2d.fromDegrees(SubsystemFactory.getInstance().getTelemetry().getGyroscope().getAngle().toDegrees()));
         } else {
             speeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
         }
@@ -288,10 +288,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         frontRightModule.setTargetVelocity(states[1].speedMetersPerSecond, states[1].angle.getRadians());
         backLeftModule.setTargetVelocity(states[2].speedMetersPerSecond, states[2].angle.getRadians());
         backRightModule.setTargetVelocity(states[3].speedMetersPerSecond, states[3].angle.getRadians());
-    }
-    @Override
-    public Pigeon getGyroscope() {
-        return pigeon;
     }
 
     @Override

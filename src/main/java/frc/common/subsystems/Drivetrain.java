@@ -3,9 +3,9 @@ package frc.common.subsystems;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.common.drivers.Gyroscope;
 import frc.common.math.Vector2;
+import frc.robot.subsystem.SubsystemFactory;
 
 public abstract class Drivetrain extends Subsystem {
-	public abstract Gyroscope getGyroscope();
 	
 	public abstract double getMaximumVelocity();
 	public abstract double getMaximumAcceleration();
@@ -22,7 +22,7 @@ public abstract class Drivetrain extends Subsystem {
 		SmartDashboard.putNumber("Drivetrain X velocity", getKinematicVelocity().x);
 		SmartDashboard.putNumber("Drivetrain Y velocity", getKinematicVelocity().y);
 
-		SmartDashboard.putNumber("Drivetrain angle", getGyroscope().getAngle().toDegrees());
+		SmartDashboard.putNumber("Drivetrain angle", SubsystemFactory.getInstance().getTelemetry().getGyroscope().getAngle().toDegrees());
 	}
 	
 	public void zeroSensors() {}

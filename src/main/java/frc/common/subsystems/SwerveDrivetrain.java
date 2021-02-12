@@ -17,6 +17,8 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import frc.robot.subsystem.SubsystemFactory;
+
 public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     private Vector2 kinematicPosition = Vector2.ZERO;
     private Vector2 kinematicVelocity = Vector2.ZERO;
@@ -28,7 +30,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
     public void holonomicDrive(Vector2 translation, double rotation, boolean fieldOriented) {
         if (fieldOriented) {
-            translation = translation.rotateBy(getGyroscope().getAngle().inverse());
+            translation = translation.rotateBy(SubsystemFactory.getInstance().getTelemetry().getGyroscope().getAngle().inverse());
         }
 
         for (SwerveModule module : getSwerveModules()) {
@@ -48,7 +50,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
     @Override
     public synchronized void updateKinematics(double timestamp) {
-        double robotRotation = getGyroscope().getAngle().toRadians();
+        double robotRotation = SubsystemFactory.getInstance().getTelemetry().getGyroscope().getAngle().toRadians();
         double dt = timestamp - lastKinematicTimestamp;
         lastKinematicTimestamp = timestamp;
 

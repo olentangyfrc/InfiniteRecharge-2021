@@ -28,6 +28,7 @@ public class Telemetry extends SubsystemBase{
     private double correction = Math.PI/180;
     private MedianFilter filterFront;
     private MedianFilter filterRear;
+    private Pigeon pigeon;
 
     public Telemetry() {
     }
@@ -35,15 +36,19 @@ public class Telemetry extends SubsystemBase{
     public void init(PortMan portMan) throws Exception{
         logger.entering(Telemetry.class.getName(), "init()");
 
-        //frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital4_label, "Telemetry.frontLidar"));
+        frontLidar = new LidarPWM(portMan.acquirePort(PortMan.digital4_label, "Telemetry.frontLidar"));
         rearLidar = new LidarPWM(portMan.acquirePort(PortMan.digital1_label, "Telemetry.rearLidar"));
         filterFront = new MedianFilter(10);
         filterRear = new MedianFilter(10);
 
         CameraServer.getInstance().startAutomaticCapture();
         //CameraServer.getInstance().startAutomaticCapture();
+        pigeon = new Pigeon(21);
+        pigeon.calibrate();
+        pigeon.setInverted(true);
 
         logger.exiting(Telemetry.class.getName(), "init()");
+
     }
 
     public boolean isSquare(double tolerance){
@@ -160,5 +165,9 @@ public class Telemetry extends SubsystemBase{
 
     public double getBetweenLidar(){
         return betweenLidarDistance;
+    }
+
+    public Pigeon getGyroscope() {
+        return pigeon;
     }
 }

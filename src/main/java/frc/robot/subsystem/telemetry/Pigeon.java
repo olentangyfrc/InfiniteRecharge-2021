@@ -9,7 +9,7 @@ public final class Pigeon extends Gyroscope {
     private PigeonIMU pigeon;
     private static Pigeon me;
 
-    private Pigeon(int canPort) {
+    public Pigeon(int canPort) {
         pigeon = new PigeonIMU(canPort);
     }
 
@@ -47,12 +47,5 @@ public final class Pigeon extends Gyroscope {
             default:
                 return 0.0;
         }
-    }
-    public static Pigeon getInstance() {
-        if(me == null) {
-            me = new Pigeon(21);
-            me.calibrate();
-        }
-        return me;
     }
 }

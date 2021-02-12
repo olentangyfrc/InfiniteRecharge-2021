@@ -306,9 +306,6 @@ public class SubsystemFactory {
     public OneWheelShooter getShooter(){
         return oneWheelShooter;
     }
-    public Gyroscope getGyro() {
-        return pigeon;
-    }
 
     private String getBotName() throws Exception {
 

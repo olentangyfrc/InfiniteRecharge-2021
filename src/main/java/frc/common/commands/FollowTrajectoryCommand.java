@@ -45,7 +45,7 @@ public class FollowTrajectoryCommand extends Command {
     protected void initialize() {
         trajectory = trajectorySupplier.get();
         driveTrain = DrivetrainSubsystem2910.getInstance();
-        pigeon = SubsystemFactory.getInstance().getGyro();
+        pigeon = SubsystemFactory.getInstance().getTelemetry().getGyroscope();
         driveTrain.resetKinematics(Vector2.ZERO, Timer.getFPGATimestamp());
         driveTrain.getFollower().follow(trajectory);
     }

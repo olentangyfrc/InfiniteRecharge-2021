@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
 import frc.robot.subsystem.PortMan;
+import frc.robot.subsystem.SubsystemFactory;
 import frc.robot.subsystem.swerve.commands.DriveCommand;
 import frc.robot.subsystem.telemetry.Pigeon;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -63,10 +64,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void init(PortMan portMan) throws Exception {
 
         //private final Gyroscope gyroscope = new NavX(SPI.Port.kMXP);
-        pigeon = Pigeon.getInstance();
-
-        pigeon.calibrate();
-        pigeon.setInverted(true); // You might not need to invert the gyro
+        pigeon = SubsystemFactory.getInstance().getTelemetry().getGyroscope();
 
         frontLeftModule = new Mk2SwerveModuleBuilder(
             new Vector2(TRACKWIDTH / 2.0, WHEELBASE / 2.0))
