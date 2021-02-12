@@ -2,8 +2,11 @@ package frc.common.control;
 
 import frc.common.math.RigidTransform2;
 import frc.common.math.Vector2;
+import frc.common.math.Rotation2;
 import frc.common.util.HolonomicDriveSignal;
 import frc.common.util.HolonomicFeedforward;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 
 public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollower<HolonomicDriveSignal> {
     private PidController forwardController;
@@ -12,7 +15,7 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
 
     private HolonomicFeedforward feedforward;
 
-    private Trajectory.Segment lastSegment = null;
+    private Trajectory.State lastState = null;
 
     private boolean finished = false;
 
@@ -31,21 +34,23 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
     protected HolonomicDriveSignal calculateDriveSignal(RigidTransform2 currentPose, Vector2 velocity,
                                                double rotationalVelocity, Trajectory trajectory, double time,
                                                double dt) {
-        if (time > trajectory.getDuration()) {
+        if (time > trajectory.getTotalTimeSeconds()) {
             finished = true;
             return new HolonomicDriveSignal(Vector2.ZERO, 0.0, false);
         }
 
-        lastSegment = trajectory.calculateSegment(time);
+        lastState = trajectory.sample(time);
 
-        Vector2 segmentVelocity = Vector2.fromAngle(lastSegment.heading).scale(lastSegment.velocity);
-        Vector2 segmentAcceleration = Vector2.fromAngle(lastSegment.heading).scale(lastSegment.acceleration);
+        //Vector2 segmentVelocity = Vector2.fromAngle(lastSegment.heading).scale(lastSegment.velocity);
+        Vector2 segmentVelocity = Vector2.fromAngle(Rotation2.fromDegrees(lastState.poseMeters.getRotation().getDegrees())).scale(lastState.velocityMetersPerSecond);
+        //Vector2 segmentAcceleration = Vector2.fromAngle(lastSegment.heading).scale(lastSegment.acceleration);
+        Vector2 segmentAcceleration = Vector2.fromAngle(Rotation2.fromDegrees(lastState.poseMeters.getRotation().getDegrees())).scale(lastState.accelerationMetersPerSecondSq);
 
         Vector2 feedforwardVector = feedforward.calculateFeedforward(segmentVelocity, segmentAcceleration);
 
-        forwardController.setSetpoint(lastSegment.translation.x);
-        strafeController.setSetpoint(lastSegment.translation.y);
-        rotationController.setSetpoint(lastSegment.rotation.toRadians());
+        forwardController.setSetpoint(lastState.poseMeters.getTranslation().getX());
+        strafeController.setSetpoint(lastState.poseMeters.getTranslation().getY());
+        rotationController.setSetpoint(Rotation2.fromDegrees(lastState.poseMeters.getRotation().getDegrees()).toRadians());
 
         return new HolonomicDriveSignal(
                 new Vector2(
@@ -57,8 +62,8 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
         );
     }
 
-    public Trajectory.Segment getLastSegment() {
-        return lastSegment;
+    public Trajectory.State getLastState() {
+        return lastState;
     }
 
     @Override

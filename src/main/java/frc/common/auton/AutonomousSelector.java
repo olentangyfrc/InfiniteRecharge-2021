@@ -27,14 +27,16 @@ import java.util.logging.Logger;
 
 public class AutonomousSelector {
     private final AutonomousTrajectories trajectories;
-
-    private static SendableChooser<Side> sideChooser;
+    
+    //private static SendableChooser<Side> sideChooser;
     private static SendableChooser<Rotation2> orientationChooser;
+    /*
     private static SendableChooser<AutonomousMode> autonomousModeChooser;
     private static NetworkTableEntry onHab2Entry;
     private static NetworkTableEntry placeThirdPanelEntry;
     private static NetworkTableEntry placeFourthPanelEntry;
     private static NetworkTableEntry rocketAutoEntry;
+    */
 
     private Queue<Command> hybridCommandQueue = new LinkedList<>();
 
@@ -42,7 +44,7 @@ public class AutonomousSelector {
 
     static {
         ShuffleboardTab sandstormTab = Shuffleboard.getTab("Sandstorm settings");
-
+        /*
         sideChooser = new SendableChooser<>();
         sideChooser.addOption("Left", Side.LEFT);
         sideChooser.setDefaultOption("Right", Side.RIGHT);
@@ -73,6 +75,7 @@ public class AutonomousSelector {
         rocketAutoEntry = sandstormTab.add("Rocket Auto", false)
                 .withWidget(BuiltInWidgets.kToggleButton)
                 .getEntry();
+        */
     }
 
     public AutonomousSelector(AutonomousTrajectories trajectories) {
@@ -81,14 +84,14 @@ public class AutonomousSelector {
 
     private Command getFillRocketBottomCommand() {
         // First leave the hab and drive to the far rocket
-        AutonomousMode mode = autonomousModeChooser.getSelected();
+        /*AutonomousMode mode = autonomousModeChooser.getSelected();
         Rotation2 startingOrientation = orientationChooser.getSelected();
         Side startingSide = sideChooser.getSelected();
-        boolean onHab2 = onHab2Entry.getBoolean(false);
+        boolean onHab2 = onHab2Entry.getBoolean(false);*/
 
         CommandGroup group = new CommandGroup();
 
-        if (onHab2) {
+        /*if (onHab2) {
             group.addSequential(new FollowTrajectoryCommand(
                     trajectories.getHab2ToRocketFarTrajectory(startingSide)
             ));
@@ -105,16 +108,17 @@ public class AutonomousSelector {
         // Go to the near rocket and place
         group.addSequential(new FollowTrajectoryCommand(
                 trajectories.getLoadingStationToRocketNearTrajectory(startingSide)
-        ));
+        ));*/
         return group;
     }
 
     public Command getCommand() {
         
         Rotation2 startingOrientation = orientationChooser.getSelected();
+        /*
         Side startingSide = sideChooser.getSelected();
         boolean onHab2 = onHab2Entry.getBoolean(false);
-
+        */
         CommandGroup group = new CommandGroup();
         group.setRunWhenDisabled(true);
 
@@ -128,11 +132,15 @@ public class AutonomousSelector {
         // If we want to manually drive the robot, return now.
         // Drive to the first target
         // If we are on hab 2, leave hab 2 in a (semi) repeatable manner
+        /*
         if (onHab2) {
             group.addSequential(new FollowTrajectoryCommand(trajectories.getHab2ToCargoSideNearTrajectory(startingSide)));
         } else {
             group.addSequential(new FollowTrajectoryCommand(trajectories.getHab1ToCargoSideNearTrajectory(startingSide)));
-        }
+        }*/
+
+
+
         // Enqueue the next trajectories
         hybridCommandQueue.clear();
         return group;

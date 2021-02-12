@@ -5,7 +5,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.subsystem.SubsystemFactory;
 import frc.robot.subsystem.swerve.DrivetrainSubsystem2910;
-import frc.common.control.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import frc.common.math.Vector2;
 import frc.common.util.HolonomicDriveSignal;
 import frc.common.math.RigidTransform2;
@@ -56,7 +57,7 @@ public class FollowTrajectoryCommand extends Command {
 
     @Override
     protected void end() {
-        DrivetrainSubsystem2910.getInstance().setSnapRotation(trajectory.calculateSegment(trajectory.getDuration()).rotation.toRadians());
+        DrivetrainSubsystem2910.getInstance().setSnapRotation(trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters.getRotation().getDegrees());
     }
 
     @Override

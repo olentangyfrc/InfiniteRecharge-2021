@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+
 public abstract class TrajectoryFollower<DriveSignalType> {
     private final Object trajectoryLock = new Object();
 

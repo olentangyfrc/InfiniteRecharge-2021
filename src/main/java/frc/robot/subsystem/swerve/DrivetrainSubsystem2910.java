@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import frc.robot.subsystem.PortMan;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
 
 public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     private static final double TRACKWIDTH = 23.5;
@@ -89,7 +90,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
     private final Object lock = new Object();
     private HolonomicDriveSignal signal = new HolonomicDriveSignal(Vector2.ZERO, 0.0, false);
-    private Trajectory.Segment segment = null;
+    private Trajectory.State state = null;
 
     private DrivetrainSubsystem2910() throws Exception {
         pm = PortMan.getInstance();
@@ -202,7 +203,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
             localSignal = optSignal.get();
 
             synchronized (lock) {
-                segment = follower.getLastSegment();
+                state = follower.getLastState();
             }
         } else {
             synchronized (lock) {
@@ -230,10 +231,10 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         super.outputToSmartDashboard();
 
         HolonomicDriveSignal localSignal;
-        Trajectory.Segment localSegment;
+        Trajectory.State localState;
         synchronized (lock) {
             localSignal = signal;
-            localSegment = segment;
+            localState = state;
         }
 
         SmartDashboard.putNumber("Gyro Angle", pigeon.getAxis(Axis.YAW));
@@ -242,14 +243,14 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         SmartDashboard.putNumber("Drivetrain Follower Rotation", localSignal.getRotation());
         SmartDashboard.putBoolean("Drivetrain Follower Field Oriented", localSignal.isFieldOriented());
 
-        if (follower.getCurrentTrajectory().isPresent() && localSegment != null) {
-            SmartDashboard.putNumber("Drivetrain Follower Target Angle", localSegment.rotation.toDegrees());
+        if (follower.getCurrentTrajectory().isPresent() && localState != null) {
+            SmartDashboard.putNumber("Drivetrain Follower Target Angle", localState.poseMeters.getRotation().getDegrees());
 
             Vector2 position = getKinematicPosition();
 
-            SmartDashboard.putNumber("Drivetrain Follower X Error", localSegment.translation.x - position.x);
-            SmartDashboard.putNumber("Drivetrain Follower Y Error", localSegment.translation.y - position.y);
-            SmartDashboard.putNumber("Drivetrain Follower Angle Error", localSegment.rotation.toDegrees() - getGyroscope().getAngle().toDegrees());
+            SmartDashboard.putNumber("Drivetrain Follower X Error", localState.poseMeters.getTranslation().getX() - position.x);
+            SmartDashboard.putNumber("Drivetrain Follower Y Error", localState.poseMeters.getTranslation().getY() - position.y);
+            //SmartDashboard.putNumber("Drivetrain Follower Angle Error", localSegment.rotation.toDegrees() - getGyroscope().getAngle().toDegrees());
         }
 
         for (SwerveModule module : swerveModules) {
