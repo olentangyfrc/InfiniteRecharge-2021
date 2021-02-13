@@ -31,6 +31,7 @@ import frc.robot.subsystem.telemetry.commands.SquareSelf;
 import frc.robot.subsystem.telemetry.commands.GoToHorizontalDistance;
 import frc.robot.subsystem.telemetry.commands.GoToVerticalDistance;
 import frc.robot.subsystem.telemetry.commands.RotateTowardsBall;
+import frc.robot.subsystem.telemetry.commands.DriveToBall;
 import frc.robot.subsystem.telemetry.Pigeon;
 import frc.robot.subsystem.onewheelshooter.OneWheelShooter;
 import frc.robot.subsystem.winch.Winch;
@@ -271,6 +272,9 @@ public class SubsystemFactory {
 
         RotateTowardsBall ccf = new RotateTowardsBall(telemetry);
         OI.getInstance().bind(ccf, OI.LeftJoyButton8, OI.WhenPressed);
+
+        DriveToBall ccg = new DriveToBall(telemetry);
+        OI.getInstance().bind(ccg, OI.RightJoyButton6, OI.WhenPressed);
 
         //Command Groups
         /*

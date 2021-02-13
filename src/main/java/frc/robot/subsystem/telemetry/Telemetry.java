@@ -253,4 +253,12 @@ public class Telemetry extends SubsystemBase{
     public void setBallDirection(String dir){
         ballDirection = dir;
     }
+
+    public double getBallDistance(){
+        return ballDistance;
+    }
+
+    public void setBallDistance(double feet){
+        ballDistance = feet;
+    }
 }
