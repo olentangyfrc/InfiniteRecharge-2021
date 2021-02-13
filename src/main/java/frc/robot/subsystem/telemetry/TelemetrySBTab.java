@@ -35,6 +35,9 @@ public class TelemetrySBTab implements SBInterface {
     public NetworkTableEntry rotationalSpeed;
     public NetworkTableEntry translationalSpeed;
     public NetworkTableEntry lidarDifference;
+    public NetworkTableEntry ballDirection;
+    public NetworkTableEntry ballDistance;
+    public NetworkTableEntry ballSeen;
     public double lidarTolerance = 2.34;
 
     public TelemetrySBTab(Telemetry te){
@@ -55,10 +58,13 @@ public class TelemetrySBTab implements SBInterface {
         rotationalSpeed = tab.add("Rotational Speed", 0.0).getEntry();
         translationalSpeed = tab.add("Translational Speed", 0.0).getEntry();
         lidarDifference = tab.add("Lidar Difference", 0.0).getEntry();
+        ballSeen = tab.add("Sees Ball", false).getEntry();
+        ballDirection = tab.add("Ball Direction", 0.0).getEntry();
+        ballDistance = tab.add("Ball Distance", 0.0).getEntry();
 
     }
     public void update(){
-        isSquare.setBoolean(telemetry.isSquare(lidarTolerance));
+        isSquare.setBoolean(telemetry.isSquare(tolerance.getDouble(10.0)));
         frontDistance.setDouble(telemetry.getFrontLidarDistance());
         rearDistance.setDouble(telemetry.getRearLidarDistance());
         backDistance.setDouble(telemetry.getBackLidarDistance());
@@ -73,5 +79,6 @@ public class TelemetrySBTab implements SBInterface {
         telemetry.setVerticalTargetDistance(verticalTargetDistance.getDouble(10.0));
         telemetry.setRotationalSpeed(rotationalSpeed.getDouble(0.1));
         telemetry.setTranslationalSpeed(translationalSpeed.getDouble(0.1));
+        telemetry.setBallDirection("left");
     }
 }

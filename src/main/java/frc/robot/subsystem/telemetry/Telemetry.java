@@ -34,6 +34,9 @@ public class Telemetry extends SubsystemBase{
     private double frontShort, frontMed;   //front ranges 
     private double rearShort, rearMed;   //rear ranges
 
+    private String ballDirection;
+    private double ballDistance;
+
     private static Logger logger = Logger.getLogger(Telemetry.class.getName());
 
     private double betweenLidarDistance = 0;
@@ -77,6 +80,7 @@ public class Telemetry extends SubsystemBase{
         else
             return false;
     }
+
 
     public int whereAmI(){
     {
@@ -229,5 +233,24 @@ public class Telemetry extends SubsystemBase{
     public double getTranslationalSpeed()
     {
         return translationalSpeed;
+    }
+
+    public int getBallDirection(){
+        if(ballDirection.equals("left"))
+        {
+            return 1;
+        }
+        else if(ballDirection.equals("right"))
+        {
+            return -1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public void setBallDirection(String dir){
+        ballDirection = dir;
     }
 }
