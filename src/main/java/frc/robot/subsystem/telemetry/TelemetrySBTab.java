@@ -59,7 +59,7 @@ public class TelemetrySBTab implements SBInterface {
         translationalSpeed = tab.add("Translational Speed", 0.0).getEntry();
         lidarDifference = tab.add("Lidar Difference", 0.0).getEntry();
         ballSeen = tab.add("Sees Ball", false).getEntry();
-        ballDirection = tab.add("Ball Direction", 0.0).getEntry();
+        ballDirection = tab.add("Ball Direction", "").getEntry();
         ballDistance = tab.add("Ball Distance", 0.0).getEntry();
 
     }

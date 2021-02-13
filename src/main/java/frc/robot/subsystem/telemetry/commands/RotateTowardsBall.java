@@ -36,6 +36,7 @@ public class RotateTowardsBall extends CommandBase {
   @Override
   public void execute() {
     direction = telemetry.getBallDirection();
+    logger.info("" + direction);
     SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(0, 0), telemetry.getRotationalSpeed() * direction, true);
     logger.info("rotating");
     if(telemetry.getBallDirection() == 0)

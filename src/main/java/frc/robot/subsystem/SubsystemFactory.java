@@ -271,7 +271,7 @@ public class SubsystemFactory {
         OI.getInstance().bind(cce, OI.LeftJoyButton10, OI.WhenPressed);
 
         RotateTowardsBall ccf = new RotateTowardsBall(telemetry);
-        OI.getInstance().bind(ccf, OI.LeftJoyButton8, OI.WhenPressed);
+        OI.getInstance().bind(ccf, OI.LeftJoyButton2, OI.WhenPressed);
 
         DriveToBall ccg = new DriveToBall(telemetry);
         OI.getInstance().bind(ccg, OI.RightJoyButton6, OI.WhenPressed);
