@@ -54,8 +54,8 @@ public class Robot extends TimedRobot {
   ControlPanel controlPanel;
   private static SubsystemFactory subsystemFactory;
 
-  private Instant initTime;
-  private Instant currentTime;
+  private static Instant initTime;
+  private static Instant currentTime;
 
   private DisplayManager dManager;
   private ShuffleboardTab tab;
@@ -71,6 +71,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    resetTime();
     initTime = Instant.now();
 
     subsystemFactory = SubsystemFactory.getInstance();
@@ -110,7 +111,7 @@ public class Robot extends TimedRobot {
       // need to double check if default Drive command is being called too.
       // this looks realy weird.
       currentTime = Instant.now();
-      SubsystemFactory.getInstance().getDriveTrain().updateKinematics(Duration.between(initTime, currentTime).toMillis());
+      SubsystemFactory.getInstance().getDriveTrain().updateKinematics(Duration.between(initTime, currentTime).toSeconds());
        
   }
 
@@ -127,6 +128,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    resetTime();
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
@@ -145,6 +147,10 @@ public class Robot extends TimedRobot {
 
     //test.execute();
   }
+  @Override
+  public void teleopInit() {
+    resetTime();
+  }
 
   /**
    * This function is called periodically during operator control.
@@ -158,5 +164,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+  public static void resetTime() {
+    initTime = Instant.now();
+    currentTime = Instant.now();
+
   }
 }

@@ -117,13 +117,13 @@ public class AutonomousSelector {
 
         CommandGroup group = new CommandGroup();
         group.setRunWhenDisabled(true);
-
+        /*
         // Set the gyro angle to the correct starting angle
         group.addSequential(new InstantCommand(() -> {
             DrivetrainSubsystem2910.getInstance().getGyroscope().setAdjustmentAngle(
                     DrivetrainSubsystem2910.getInstance().getGyroscope().getUnadjustedAngle().rotateBy(startingOrientation)
             );
-    }));
+        }));
 
         // If we want to manually drive the robot, return now.
         // Drive to the first target
@@ -133,7 +133,8 @@ public class AutonomousSelector {
         } else {
             group.addSequential(new FollowTrajectoryCommand(trajectories.getHab1ToCargoSideNearTrajectory(startingSide)));
         }
-        // Enqueue the next trajectories
+        // Enqueue the next trajectories*/
+        group.addSequential(new FollowTrajectoryCommand(trajectories.getBasicLineTrajectory()));
         hybridCommandQueue.clear();
         return group;
     }

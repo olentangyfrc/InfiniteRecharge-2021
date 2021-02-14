@@ -17,6 +17,7 @@ public class HolonomicDriveCommand extends Command {
 
     public HolonomicDriveCommand() {
         requires(DrivetrainSubsystem2910.getInstance());
+        
     }
     @Override
     protected void execute() {
@@ -28,8 +29,8 @@ public class HolonomicDriveCommand extends Command {
         //String output = String.format("Forward[%f], Strafe[%f], Rotation[%f], Gyro[%f]", forward, strafe, rotation, DrivetrainSubsystem2910.getInstance().getGyroscope().getAxis(Axis.YAW));
         //logger.log(Level.INFO, output);
         DrivetrainSubsystem2910.getInstance().drive(translation, rotation, false);
-        String output = String.format("Translation: (%f,%f), Rotation: %f, FieldOriented: %b", translation.getX(), translation.getY(), rotation, false);
-        logger.log(Level.INFO, output);
+        //String output = String.format("Translation: (%f,%f), Rotation: %f, FieldOriented: %b", translation.getX(), translation.getY(), rotation, false);
+        //logger.log(Level.INFO, output);
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import frc.robot.Robot;
 
 public abstract class TrajectoryFollower<DriveSignalType> {
     private final Object trajectoryLock = new Object();
@@ -67,6 +68,7 @@ public abstract class TrajectoryFollower<DriveSignalType> {
         synchronized (trajectoryLock) {
             currentTrajectory = trajectory;
             startTime = Double.NaN;
+            
         }
     }
 

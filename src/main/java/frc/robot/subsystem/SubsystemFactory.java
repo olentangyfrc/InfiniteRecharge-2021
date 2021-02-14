@@ -107,7 +107,7 @@ public class SubsystemFactory {
 
         displayManager = dm;
         subsystemInterfaceList = new ArrayList<SBInterface>();
-        pdp = new PowerDistributionPanel(1);
+        //pdp = new PowerDistributionPanel(0);
 
         initComp(portMan);
     }

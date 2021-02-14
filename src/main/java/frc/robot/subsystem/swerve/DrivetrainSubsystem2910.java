@@ -64,14 +64,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(120.2);
     private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(259.2);
 
-    private static final PidConstants FOLLOWER_TRANSLATION_CONSTANTS = new PidConstants(0.05, 0.01, 0.0);
-    private static final PidConstants FOLLOWER_ROTATION_CONSTANTS = new PidConstants(0.2, 0.01, 0.0);
-    private static final HolonomicFeedforward FOLLOWER_FEEDFORWARD_CONSTANTS = new HolonomicFeedforward(
-            new DrivetrainFeedforwardConstants(1.0 / (14.0 * 12.0), 0.0, 0.0)
-    );
-
-    private static final PidConstants SNAP_ROTATION_CONSTANTS = new PidConstants(0.3, 0.01, 0.0);
-
     private static DrivetrainSubsystem2910 instance;
 
     private SwerveModule[] swerveModules;
@@ -81,9 +73,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
             FOLLOWER_ROTATION_CONSTANTS,
             FOLLOWER_FEEDFORWARD_CONSTANTS
     );
-
-    private PidController snapRotationController = new PidController(SNAP_ROTATION_CONSTANTS);
-    private double snapRotation = Double.NaN;
 
     private double lastTimestamp = 0;
 
@@ -148,22 +137,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
                 backLeftModule,
                 backRightModule,
         };
-
-        snapRotationController.setInputRange(0.0, 2.0 * Math.PI);
-        snapRotationController.setContinuous(true);
-        snapRotationController.setOutputRange(-0.5, 0.5);
-    }
-
-    public void setSnapRotation(double snapRotation) {
-        synchronized (lock) {
-            this.snapRotation = snapRotation;
-        }
-    }
-
-    public void stopSnap() {
-        synchronized (lock) {
-            this.snapRotation = Double.NaN;
-        }
     }
 
     @Override
@@ -185,10 +158,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         double dt = timestamp - lastTimestamp;
         lastTimestamp = timestamp;
 
-        double localSnapRotation;
-        synchronized (lock) {
-            localSnapRotation = snapRotation;
-        }
         RigidTransform2 currentPose = new RigidTransform2(
                 getKinematicPosition(),
                 Rotation2.fromDegrees(pigeon.getAxis(Axis.YAW))
@@ -207,18 +176,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         } else {
             synchronized (lock) {
                 localSignal = this.signal;
-            }
-        }
-
-        if (Math.abs(localSignal.getRotation()) < 0.1 && Double.isFinite(localSnapRotation)) {
-            snapRotationController.setSetpoint(localSnapRotation);
-
-            localSignal = new HolonomicDriveSignal(localSignal.getTranslation(),
-                    snapRotationController.calculate(getGyroscope().getAngle().toRadians(), dt),
-                    localSignal.isFieldOriented());
-        } else {
-            synchronized (lock) {
-                snapRotation = Double.NaN;
             }
         }
         drive(new Translation2d(localSignal.getTranslation().x, localSignal.getTranslation().y), localSignal.getRotation(), localSignal.isFieldOriented());
@@ -310,9 +267,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     @Override
     public void stop() {
         super.stop();
-        synchronized (lock) {
-            snapRotation = Double.NaN;
-        }
     }
 
     public HolonomicMotionProfiledTrajectoryFollower getFollower() {

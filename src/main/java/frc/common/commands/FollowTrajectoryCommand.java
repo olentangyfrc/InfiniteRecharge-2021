@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.subsystem.SubsystemFactory;
 import frc.robot.subsystem.swerve.DrivetrainSubsystem2910;
+import frc.robot.Robot;
 import frc.common.control.Trajectory;
 import frc.common.math.Vector2;
 import frc.common.util.HolonomicDriveSignal;
@@ -43,6 +44,7 @@ public class FollowTrajectoryCommand extends Command {
 
     @Override
     protected void initialize() {
+
         trajectory = trajectorySupplier.get();
         driveTrain = DrivetrainSubsystem2910.getInstance();
         pigeon = SubsystemFactory.getInstance().getGyro();

@@ -5,6 +5,9 @@ import frc.common.math.Vector2;
 import frc.common.util.HolonomicDriveSignal;
 import frc.common.util.HolonomicFeedforward;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollower<HolonomicDriveSignal> {
     private PidController forwardController;
     private PidController strafeController;
@@ -15,6 +18,8 @@ public class HolonomicMotionProfiledTrajectoryFollower extends TrajectoryFollowe
     private Trajectory.Segment lastSegment = null;
 
     private boolean finished = false;
+
+    static Logger logger = Logger.getLogger(HolonomicMotionProfiledTrajectoryFollower.class.getName());
 
     public HolonomicMotionProfiledTrajectoryFollower(PidConstants translationConstants, PidConstants rotationConstants,
                                                      HolonomicFeedforward feedforward) {

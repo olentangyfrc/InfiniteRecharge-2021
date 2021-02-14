@@ -32,8 +32,8 @@ public class DriveCommand extends CommandBase {
         double rotation = - OI.getInstance().getRightJoystickXValue();
         // Square the rotation stick
         rotation = Math.copySign(Math.pow(rotation, 2.0), rotation);
-        String output = String.format("Forward[%f], Strafe[%f], Rotation[%f], Gyro[%f]", forward, strafe, rotation, SubsystemFactory.getInstance().getGyro().getAxis(Axis.YAW));
-        logger.log(Level.INFO, output);
+        //String output = String.format("Forward[%f], Strafe[%f], Rotation[%f], Gyro[%f]", forward, strafe, rotation, SubsystemFactory.getInstance().getGyro().getAxis(Axis.YAW));
+        //logger.log(Level.INFO, output);
         driveTrain.drive(new Translation2d(forward, strafe), rotation, true);
     }
 
