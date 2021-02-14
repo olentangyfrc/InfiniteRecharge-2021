@@ -75,7 +75,7 @@ public class TelemetrySBTab implements SBInterface {
         telemetry.setTolerance(tolerance.getDouble(10.0));
         telemetry.setTolerance(translationalTolerance.getDouble(10.0));
         telemetry.setHorDirection(telemetry.directionToGo());
-        telemetry.setHorizontalTargetDistance(horizontalTar+getDistance.getDouble(10.0));
+        telemetry.setHorizontalTargetDistance(horizontalTargetDistance.getDouble(10.0));
         telemetry.setVerticalDirection(telemetry.verticalDirectionToGo());
         telemetry.setVerticalTargetDistance(verticalTargetDistance.getDouble(10.0));
         telemetry.setRotationalSpeed(rotationalSpeed.getDouble(0.1));
