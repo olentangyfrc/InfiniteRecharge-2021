@@ -10,6 +10,8 @@ package frc.robot.subsystem.telemetry;
 import java.util.logging.Logger;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.networktables;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.subsystem.SBInterface;
@@ -35,15 +37,19 @@ public class TelemetrySBTab implements SBInterface {
     public NetworkTableEntry rotationalSpeed;
     public NetworkTableEntry translationalSpeed;
     public NetworkTableEntry lidarDifference;
-    public NetworkTableEntry ballDirection;
-    public NetworkTableEntry ballDistance;
-    public NetworkTableEntry ballSeen;
     public double lidarTolerance = 2.34;
+    public String ballDirection = "direction";
+    public int ballDistance;
+    public boolean seeBall;
 
     public TelemetrySBTab(Telemetry te){
         telemetry = te;
         
         tab = Shuffleboard.getTab("Telemetry");
+        
+        //ballDirection = NetworkTables.getTab("Vision").getEntry("BallDirection");
+        ballDistance = NetworkTables.getTab("Vision").getEntry("BallDistance");
+        seeBall = NetworkTables.getTab("Vision").getEntry("SeeBall");
 
         frontDistance = tab.add("Front Lidar Distance", 0).getEntry();
         rearDistance = tab.add("Rear Lidar Distance", 0).getEntry();
@@ -58,28 +64,29 @@ public class TelemetrySBTab implements SBInterface {
         rotationalSpeed = tab.add("Rotational Speed", 0.0).getEntry();
         translationalSpeed = tab.add("Translational Speed", 0.0).getEntry();
         lidarDifference = tab.add("Lidar Difference", 0.0).getEntry();
-        ballSeen = tab.add("Sees Ball", false).getEntry();
-        ballDirection = tab.add("Ball Direction", "").getEntry();
-        ballDistance = tab.add("Ball Distance", 0.0).getEntry();
 
     }
     public void update(){
-        isSquare.setBoolean(telemetry.isSquare(tolerance.getDouble(10.0)));
+        isSquare.setBoolean(telemetry.isSquare(lidarTolerance));
         frontDistance.setDouble(telemetry.getFrontLidarDistance());
         rearDistance.setDouble(telemetry.getRearLidarDistance());
         backDistance.setDouble(telemetry.getBackLidarDistance());
         lidarDifference.setDouble(Math.abs(telemetry.getFrontLidarDistance() - telemetry.getRearLidarDistance()));
-       // tolerance.setDouble(telemetry.getTolerance());
-       // telemetry.setTolerance(tolerance.getDouble(5.0));
         telemetry.setTolerance(tolerance.getDouble(10.0));
         telemetry.setTolerance(translationalTolerance.getDouble(10.0));
         telemetry.setHorDirection(telemetry.directionToGo());
-        telemetry.setHorizontalTargetDistance(horizontalTargetDistance.getDouble(10.0));
+        telemetry.setHorizontalTargetDistance(horizontalTar+getDistance.getDouble(10.0));
         telemetry.setVerticalDirection(telemetry.verticalDirectionToGo());
         telemetry.setVerticalTargetDistance(verticalTargetDistance.getDouble(10.0));
         telemetry.setRotationalSpeed(rotationalSpeed.getDouble(0.1));
         telemetry.setTranslationalSpeed(translationalSpeed.getDouble(0.1));
-        telemetry.setBallDirection(ballDirection.getString("left"));
-        telemetry.setBallDistance(ballDistance.getDouble(10.0));
+       
+        telemetry.setBallDirection(ballDirection);
+        logger.info("Ball Direction: " + ballDirection);
+        telemetry.setBallDistance(ballDistance);
+        logger.info("Ball Distance: " + ballDistance);
+        telemetry.setSeeBall(seeBall);
+        logger.info("See Ball: " + seeBall);
+        
     }
 }

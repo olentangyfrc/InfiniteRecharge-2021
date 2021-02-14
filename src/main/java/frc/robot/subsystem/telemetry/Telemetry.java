@@ -1,3 +1,4 @@
+
 /**
  * two lidars
  * one boolean to see if the robot is parallel at a certain distance
@@ -34,9 +35,6 @@ public class Telemetry extends SubsystemBase{
     private double frontShort, frontMed;   //front ranges 
     private double rearShort, rearMed;   //rear ranges
 
-    private String ballDirection;
-    private double ballDistance;
-
     private static Logger logger = Logger.getLogger(Telemetry.class.getName());
 
     private double betweenLidarDistance = 0;
@@ -54,6 +52,11 @@ public class Telemetry extends SubsystemBase{
     //targetDistance is the distance away from the wall
     private double horizontalTargetDistance = 100;
     private double verticalTargetDistance = 100;
+
+    private String ballLocation; //left right or center
+    private int ballDirection; //1 -1 or 0
+    private int ballDistance;
+    private boolean seeBall;
 
     public Telemetry() {
     }
@@ -80,7 +83,6 @@ public class Telemetry extends SubsystemBase{
         else
             return false;
     }
-
 
     public int whereAmI(){
     {
@@ -183,7 +185,17 @@ public class Telemetry extends SubsystemBase{
         return Math.round(filterBack.calculate(backLidar.getDistance())) * 1.0;
     }
 
-    
+    public int getBallDirection(){
+        if(ballLocation.equals("left"))
+            ballDirection = 1;
+        else if(ballLocation.equals("right"))
+            ballDirection = -1;
+        else if(ballLocation.equals("center"))
+            ballDirection = 0;
+
+        return ballDirection;
+    }
+
     public double getTolerance(){
         return lidarTolerance;
     }
@@ -235,30 +247,18 @@ public class Telemetry extends SubsystemBase{
         return translationalSpeed;
     }
 
-    public int getBallDirection(){
-        if(ballDirection.equals("left"))
-        {
-            return 1;
-        }
-        else if(ballDirection.equals("right"))
-        {
-            return -1;
-        }
-        else
-        {
-            return 0;
-        }
+    public void setBallDirection(String bd)
+    {
+        ballLocation = bd;
     }
 
-    public void setBallDirection(String dir){
-        ballDirection = dir;
+    public void setBallDistance(int bd)
+    {
+        ballDistance = bd;
     }
 
-    public double getBallDistance(){
-        return ballDistance;
-    }
-
-    public void setBallDistance(double feet){
-        ballDistance = feet;
+    public void setSeeBall(boolean sb)
+    {
+        seeBall = sb;
     }
 }

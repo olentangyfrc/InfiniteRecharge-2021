@@ -26,7 +26,7 @@ public class DriveToBall extends CommandBase {
   @Override
   public void initialize() {
     logger.info("starts DriveToBall");
-  stop = false;
+    stop = false;
 
   //stop = true; why is there stop = true?
   }
@@ -34,7 +34,6 @@ public class DriveToBall extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    direction = telemetry.whereAmI();
     SubsystemFactory.getInstance().getDriveTrain().drive(new Translation2d(telemetry.getTranslationalSpeed(), 0), 0, true);
     logger.info("going");
     if(telemetry.getBallDistance() <= 2)
