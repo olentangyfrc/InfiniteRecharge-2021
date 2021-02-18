@@ -119,4 +119,8 @@ public class MathUtils {
 			return t;
 		}
 	}
+	//Map a value from one range of values to another.
+	public static double map(double value, double startMin, double startMax, double endMin, double endMax) {
+		return (value - startMin) * (endMax - endMin) / (startMax - startMin) + endMin;
+	}
 }

@@ -48,6 +48,19 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
     private PortMan pm;
 
+    private boolean isRotating = true;
+
+    // Teleop PID is a work in progress it is supposed to keep the robot from drifting while moving straight.
+
+    private static final PidConstants driftConstants = new PidConstants(0.2, 0.01, 0.0);
+    private static final PidController driftPid = new PidController(driftConstants);
+
+    private static final PidConstants FOLLOWER_TRANSLATION_CONSTANTS = new PidConstants(0.05, 0.01, 0.0);
+    private static final PidConstants FOLLOWER_ROTATION_CONSTANTS = new PidConstants(0.2, 0.01, 0.0);
+    private static final HolonomicFeedforward FOLLOWER_FEEDFORWARD_CONSTANTS = new HolonomicFeedforward(
+            new DrivetrainFeedforwardConstants(1.0 / (14.0 * 12.0), 0.0, 0.0)
+    );
+
     public static final ITrajectoryConstraint[] CONSTRAINTS = {
             new MaxVelocityConstraint(MAX_VELOCITY),
             new MaxAccelerationConstraint(13.0 * 12.0),
@@ -137,6 +150,10 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
                 backLeftModule,
                 backRightModule,
         };
+        driftPid.setInputRange(-180, 180);
+        driftPid.setContinuous(true);
+        driftPid.setOutputRange(-1, 1);
+        driftPid.setScaleOutput(true);
     }
 
     @Override
@@ -230,6 +247,15 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         return swerveModules;
     }
     public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
+        /*Checks if the isRotating boolean matches up with whether or not the bot is actually rotating, changes the boolean if they don't match.
+        This doesn't detect autonomous rotation.
+        */
+        if(Math.abs(rotation) < 0.1 && isRotating == true) {
+            isRotating = false;
+        } else if(Math.abs(rotation) > 0.1 && isRotating == false) {
+            isRotating = true;
+        }
+        logger.log(Level.INFO, "isRotating: [" + isRotating + "]");
         rotation *= 2.0 / Math.hypot(WHEELBASE, TRACKWIDTH);
         ChassisSpeeds speeds;
         if (fieldOriented) {
