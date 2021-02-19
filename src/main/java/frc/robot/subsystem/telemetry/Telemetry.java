@@ -261,4 +261,9 @@ public class Telemetry extends SubsystemBase{
     {
         seeBall = sb;
     }
+
+    public int getBallDistance()
+    {
+        return ballDistance;
+    }
 }

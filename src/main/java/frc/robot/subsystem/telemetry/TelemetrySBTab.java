@@ -10,8 +10,7 @@ package frc.robot.subsystem.telemetry;
 import java.util.logging.Logger;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.networktables;
-
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.subsystem.SBInterface;
@@ -48,8 +47,8 @@ public class TelemetrySBTab implements SBInterface {
         tab = Shuffleboard.getTab("Telemetry");
         
         //ballDirection = NetworkTables.getTab("Vision").getEntry("BallDirection");
-        ballDistance = NetworkTables.getTab("Vision").getEntry("BallDistance");
-        seeBall = NetworkTables.getTab("Vision").getEntry("SeeBall");
+        ballDistance = NetworkTable.getTab("Vision").getEntry("BallDistance");
+        seeBall = NetworkTable.getTab("Vision").getEntry("SeeBall");
 
         frontDistance = tab.add("Front Lidar Distance", 0).getEntry();
         rearDistance = tab.add("Rear Lidar Distance", 0).getEntry();
