@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import frc.robot.Robot;
+import frc.robot.subsystem.swerve.DrivetrainSubsystem2910;
 
 public abstract class TrajectoryFollower<DriveSignalType> {
     private final Object trajectoryLock = new Object();
@@ -68,7 +69,8 @@ public abstract class TrajectoryFollower<DriveSignalType> {
         synchronized (trajectoryLock) {
             currentTrajectory = trajectory;
             startTime = Double.NaN;
-            
+            DrivetrainSubsystem2910.getInstance().setSnapRotation(currentTrajectory.calculateSegment(0).rotation.toDegrees());
+            logger.log(Level.INFO, "TrajectoryFollower follow");
         }
     }
 

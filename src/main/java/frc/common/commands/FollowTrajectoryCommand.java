@@ -58,6 +58,7 @@ public class FollowTrajectoryCommand extends Command {
 
     @Override
     protected void end() {
+        DrivetrainSubsystem2910.getInstance().setSnapRotation(trajectory.calculateSegment(trajectory.getDuration()).rotation.toRadians());
     }
 
     @Override

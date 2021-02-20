@@ -111,7 +111,9 @@ public class Robot extends TimedRobot {
       // need to double check if default Drive command is being called too.
       // this looks realy weird.
       currentTime = Instant.now();
-      SubsystemFactory.getInstance().getDriveTrain().updateKinematics(Duration.between(initTime, currentTime).toSeconds());
+      double elapsedTime = Duration.between(initTime, currentTime).toMillis();
+      elapsedTime /= 1000;
+      SubsystemFactory.getInstance().getDriveTrain().updateKinematics(elapsedTime);
        
   }
 

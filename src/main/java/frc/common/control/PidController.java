@@ -8,10 +8,7 @@ public class PidController {
     private double setpoint;
 
     private boolean continuous = false;
-    private boolean scaleOutput = false;
     private double inputRange = Double.POSITIVE_INFINITY;
-    private double minInput = Double.NEGATIVE_INFINITY;
-    private double maxInput = Double.POSITIVE_INFINITY;
     private double minOutput = Double.NEGATIVE_INFINITY;
     private double maxOutput = Double.POSITIVE_INFINITY;
 
@@ -52,11 +49,7 @@ public class PidController {
             derivative = (error - lastError) / dt;
         }
         lastError = error;
-        if(scaleOutput) {
-            return MathUtils.map(constants.p * error + constants.i * integral + constants.d * derivative, minInput, maxInput, minOutput, maxOutput);
-        } else {
-            return MathUtils.clamp(constants.p * error + constants.i * integral + constants.d * derivative, minOutput, maxOutput);
-        }
+        return MathUtils.clamp(constants.p * error + constants.i * integral + constants.d * derivative, minOutput, maxOutput);
     }
 
     public void reset() {
@@ -78,18 +71,11 @@ public class PidController {
 
     public void setInputRange(double minInput, double maxInput) {
         this.inputRange = maxInput - minInput;
-        this.minInput = minInput;
-        this.maxInput = maxInput;
     }
 
     public void setIntegralRange(double integralRange) {
         this.integralRange = integralRange;
     }
-    //If this is set to true, the output will be scaled, if it's false, it will be clamped.
-    public void setScaleOutput(boolean scale) {
-        scaleOutput = scale;
-    }
-
     public void setShouldClearIntegralOnErrorSignChange(boolean shouldClearIntegralOnErrorSignChange) {
         this.shouldClearIntegralOnErrorSignChange = shouldClearIntegralOnErrorSignChange;
     }

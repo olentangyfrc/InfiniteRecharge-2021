@@ -39,6 +39,10 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
 
     static Logger logger = Logger.getLogger(DrivetrainSubsystem2910.class.getName());
 
+    private static final PidConstants SNAP_ROTATION_CONSTANTS = new PidConstants(0.3, 0.01, 0.0);
+    private PidController snapRotationController = new PidController(SNAP_ROTATION_CONSTANTS);
+    private double snapRotation = Double.NaN;
+
     private Pigeon pigeon = Pigeon.getInstance();
 
     private SwerveModule frontLeftModule;
@@ -49,11 +53,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     private PortMan pm;
 
     private boolean isRotating = true;
-
-    // Teleop PID is a work in progress it is supposed to keep the robot from drifting while moving straight.
-
-    private static final PidConstants driftConstants = new PidConstants(0.2, 0.01, 0.0);
-    private static final PidController driftPid = new PidController(driftConstants);
 
     private static final PidConstants FOLLOWER_TRANSLATION_CONSTANTS = new PidConstants(0.05, 0.01, 0.0);
     private static final PidConstants FOLLOWER_ROTATION_CONSTANTS = new PidConstants(0.2, 0.01, 0.0);
@@ -72,10 +71,14 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
             new Translation2d(-TRACKWIDTH / 2.0, WHEELBASE / 2.0),
             new Translation2d(-TRACKWIDTH / 2.0, -WHEELBASE / 2.0)
     );
-    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(2.6);
+    /*private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(2.6);
     private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(311.8);
     private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(120.2);
-    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(259.2);
+    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(259.2);*/
+    private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(1.1);
+    private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(311.24);
+    private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(119.6);
+    private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(262.9);
 
     private static DrivetrainSubsystem2910 instance;
 
@@ -144,16 +147,27 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         backLeftModule.setName("Back Left");
         backRightModule.setName("Back Right");
 
+        snapRotationController.setInputRange(0.0, 2.0 * Math.PI);
+        snapRotationController.setContinuous(true);
+        snapRotationController.setOutputRange(-0.5, 0.5);
+
         swerveModules = new SwerveModule[]{
                 frontLeftModule,
                 frontRightModule,
                 backLeftModule,
                 backRightModule,
         };
-        driftPid.setInputRange(-180, 180);
-        driftPid.setContinuous(true);
-        driftPid.setOutputRange(-1, 1);
-        driftPid.setScaleOutput(true);
+    }
+    public void setSnapRotation(double snapRotation) {
+        synchronized (lock) {
+            this.snapRotation = snapRotation;
+        }
+    }
+
+    public void stopSnap() {
+        synchronized (lock) {
+            this.snapRotation = Double.NaN;
+        }
     }
 
     @Override
@@ -175,6 +189,11 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         double dt = timestamp - lastTimestamp;
         lastTimestamp = timestamp;
 
+        double localSnapRotation;
+        synchronized (lock) {
+            localSnapRotation = snapRotation;
+        }
+
         RigidTransform2 currentPose = new RigidTransform2(
                 getKinematicPosition(),
                 Rotation2.fromDegrees(pigeon.getAxis(Axis.YAW))
@@ -195,6 +214,17 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
                 localSignal = this.signal;
             }
         }
+        if (Math.abs(localSignal.getRotation()) < 0.1 && Double.isFinite(localSnapRotation)) {
+            snapRotationController.setSetpoint(localSnapRotation);
+
+            localSignal = new HolonomicDriveSignal(localSignal.getTranslation(),
+                    snapRotationController.calculate(getGyroscope().getAngle().toRadians(), dt),
+                    localSignal.isFieldOriented());
+        } else {
+            synchronized (lock) {
+                snapRotation = Double.NaN;
+            }
+        }
         drive(new Translation2d(localSignal.getTranslation().x, localSignal.getTranslation().y), localSignal.getRotation(), localSignal.isFieldOriented());
         outputToSmartDashboard();
     }
@@ -210,7 +240,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
             localSegment = segment;
         }
 
-        SmartDashboard.putNumber("Gyro Angle", pigeon.getAxis(Axis.YAW));
+        SmartDashboard.putNumber("Gyro Angle", Math.toDegrees(pigeon.getAxis(Axis.YAW)));
         SmartDashboard.putNumber("Drivetrain Follower Forwards", localSignal.getTranslation().x);
         SmartDashboard.putNumber("Drivetrain Follower Strafe", localSignal.getTranslation().y);
         SmartDashboard.putNumber("Drivetrain Follower Rotation", localSignal.getRotation());
@@ -255,7 +285,6 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         } else if(Math.abs(rotation) > 0.1 && isRotating == false) {
             isRotating = true;
         }
-        logger.log(Level.INFO, "isRotating: [" + isRotating + "]");
         rotation *= 2.0 / Math.hypot(WHEELBASE, TRACKWIDTH);
         ChassisSpeeds speeds;
         if (fieldOriented) {
@@ -264,6 +293,7 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
         } else {
             speeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
         }
+        //logger.log(Level.INFO, String.format("Forward:[%f] Strafe:[%f] Rotation:[%f]", translation.getX(), translation.getY(), rotation));
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(speeds);
         frontLeftModule.setTargetVelocity(states[0].speedMetersPerSecond, states[0].angle.getRadians());
         frontRightModule.setTargetVelocity(states[1].speedMetersPerSecond, states[1].angle.getRadians());
@@ -293,6 +323,9 @@ public class DrivetrainSubsystem2910 extends SwerveDrivetrain {
     @Override
     public void stop() {
         super.stop();
+        synchronized (lock) {
+            snapRotation = Double.NaN;
+        }
     }
 
     public HolonomicMotionProfiledTrajectoryFollower getFollower() {

@@ -328,9 +328,8 @@ public class AutonomousTrajectories {
         basicLinePath.addSegment(
                 new PathLineSegment(
                         new Vector2(0.0,0.0),
-                        new Vector2(0.0,100)
-                ),
-                Rotation2.fromDegrees(0)
+                        new Vector2(0,10.0)
+                )
         );
         basicLinePath.subdivide(SUBDIVIDE_ITERATIONS);
         basicLineTrajectory = new Trajectory(basicLinePath, constraints);
