@@ -55,7 +55,6 @@ public class TelemetrySBTab implements SBInterface {
         rotationalSpeed = tab.add("Rotational Speed", 0.0).getEntry();
         translationalSpeed = tab.add("Translational Speed", 0.0).getEntry();
         lidarDifference = tab.add("Lidar Difference", 0.0).getEntry();
-
     }
     public void update(){
         isSquare.setBoolean(telemetry.isSquare(lidarTolerance));
